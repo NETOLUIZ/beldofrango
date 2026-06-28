@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="scripts/support.js"></script>
+<!-- Runtime DC/React para renderização dos componentes. -->
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'DM Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;color:#2A0E0A;}
+  ::-webkit-scrollbar{width:10px;height:10px;}
+  ::-webkit-scrollbar-thumb{background:rgba(122,18,9,.2);border-radius:8px;}
+  input,button,select{font-family:inherit;}
+  a{text-decoration:none;color:inherit;}
+  button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #D62828;outline-offset:2px;}
+  @keyframes syIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes syFade{from{opacity:0;}to{opacity:1;}}
+  @keyframes syToast{from{opacity:0;transform:translate(-50%,12px);}to{opacity:1;transform:translate(-50%,0);}}
+  @keyframes syPulse{0%,100%{box-shadow:0 0 0 0 rgba(214,40,40,.5);}50%{box-shadow:0 0 0 8px rgba(214,40,40,0);}}
+  @keyframes sySpin{to{transform:rotate(360deg);}}
+</style>
+</helmet>
+
+<div style="{{ rootStyle }}">
+
+  <!-- ================= LOGIN ================= -->
+  <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ true }}">
+  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(120% 90% at 50% 0%, #E8820E 0%, #B01818 46%, #5A0A06 100%);">
+    <div style="width:100%;max-width:400px;background:#FFF6D6;border-radius:26px;padding:32px 28px;box-shadow:0 30px 70px rgba(0,0,0,.4);animation:syIn .35s ease-out;">
+      <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;">
+        <div style="width:78px;height:78px;"><img src="assets/logo tranparente.png" alt="Bel do Frango" style="width:100%;height:100%;object-fit:contain;"/></div>
+        <div>
+          <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;color:#B5161C;">Bel do Frango</div>
+          <div style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.26em;color:#C0894A;text-transform:uppercase;margin-top:3px;">Sistema · Acesso</div>
+        </div>
+      </div>
+      <label style="display:block;font-size:13px;font-weight:600;color:#7A1209;margin:22px 0 6px;">E-mail</label>
+      <input value="{{ email }}" onChange="{{ onEmail }}" placeholder="voce@beldofrango.com" style="{{ inputStyle }}"/>
+      <label style="display:block;font-size:13px;font-weight:600;color:#7A1209;margin:16px 0 6px;">Senha</label>
+      <input type="password" value="{{ senha }}" onChange="{{ onSenha }}" placeholder="••••••••" style="{{ inputStyle }}"/>
+      <button onClick="{{ doLogin }}" style="margin-top:22px;width:100%;background:#D62828;color:#fff;border:none;border-radius:14px;padding:15px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 10px 24px rgba(214,40,40,.34);display:flex;align-items:center;justify-content:center;gap:9px;">
+        <sc-if value="{{ logging }}" hint-placeholder-val="{{ false }}"><span style="width:18px;height:18px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sySpin .7s linear infinite;"></span></sc-if>
+        {{ loginLabel }}
+      </button>
+      <p style="text-align:center;margin:18px 0 0;font-size:12px;color:#9A6B52;">Acesso por perfil · validação real no servidor</p>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ================= HUB DE PERFIS ================= -->
+  <sc-if value="{{ isHub }}" hint-placeholder-val="{{ false }}">
+  <div style="min-height:100vh;background:#FFF6D6;animation:syFade .25s ease-out;">
+    <div style="display:flex;align-items:center;gap:14px;padding:18px 32px;background:#F2B705;">
+      <div style="width:44px;height:44px;flex:none;"><img src="assets/logo tranparente.png" alt="Bel do Frango" style="width:100%;height:100%;object-fit:contain;"/></div>
+      <div style="flex:1;"><div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;color:#7A1209;">Bel do Frango · Sistema</div><div style="font-size:12px;color:#8A4A1C;">Selecione um perfil para abrir o módulo</div></div>
+      <button onClick="{{ logout }}" style="display:flex;align-items:center;gap:7px;background:rgba(122,18,9,.1);border:none;color:#7A1209;border-radius:11px;padding:10px 15px;font-weight:700;font-size:13px;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sair</button>
+    </div>
+    <div style="max-width:1080px;margin:0 auto;padding:34px 32px 44px;">
+      <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:26px;color:#B5161C;margin:0 0 4px;">Perfis &amp; módulos</h1>
+      <p style="margin:0 0 24px;font-size:14px;color:#9A6B52;">O frontend exibe apenas as telas do perfil — a permissão real é validada no backend.</p>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;">
+        <sc-for list="{{ perfis }}" as="p" hint-placeholder-count="6">
+          <a href="{{ p.href }}" onClick="{{ p.onClick }}" style="display:flex;flex-direction:column;gap:12px;background:#fff;border:1px solid rgba(122,18,9,.1);border-radius:20px;padding:20px;box-shadow:0 6px 18px rgba(122,18,9,.06);cursor:pointer;min-height:168px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <span style="width:48px;height:48px;border-radius:14px;background:{{ p.tintBg }};color:{{ p.tint }};display:flex;align-items:center;justify-content:center;">{{ p.icon }}</span>
+              <span style="font-family:'DM Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.08em;color:{{ p.tint }};background:{{ p.tintBg }};border-radius:7px;padding:4px 9px;">{{ p.tag }}</span>
+            </div>
+            <div style="flex:1;">
+              <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;color:#2A0E0A;">{{ p.label }}</div>
+              <div style="font-size:13px;color:#9A6B52;margin-top:4px;line-height:1.4;">{{ p.desc }}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;font-weight:700;font-size:13px;color:#D62828;">{{ p.cta }}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+          </a>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ================= KDS COZINHA ================= -->
+  <sc-if value="{{ isKds }}" hint-placeholder-val="{{ false }}">
+  <div style="height:100vh;display:flex;flex-direction:column;background:#2A0E0A;animation:syFade .25s ease-out;">
+    <div style="flex:none;display:flex;align-items:center;gap:14px;padding:16px 26px;background:#F2B705;">
+      <button onClick="{{ goHub }}" aria-label="Voltar ao hub" style="width:40px;height:40px;border-radius:12px;background:rgba(122,18,9,.12);border:none;color:#7A1209;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <div style="width:40px;height:40px;flex:none;"><img src="assets/logo tranparente.png" alt="Bel do Frango" style="width:100%;height:100%;object-fit:contain;"/></div>
+      <div style="flex:1;"><div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;color:#7A1209;">Cozinha · KDS</div><div style="font-size:12px;color:#8A4A1C;">Operação em tempo real</div></div>
+      <div style="display:flex;align-items:center;gap:8px;background:rgba(122,18,9,.1);border-radius:11px;padding:8px 14px;"><span style="width:9px;height:9px;border-radius:50%;background:#2D9E60;"></span><span style="font-family:'DM Mono',monospace;font-size:13px;color:#7A1209;">{{ kdsActiveCount }} ativos</span></div>
+    </div>
+
+    <sc-if value="{{ kdsError }}" hint-placeholder-val="{{ false }}">
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:#F2C078;text-align:center;padding:30px;">
+        <svg width="54" height="54" viewBox="0 0 24 24" fill="none" stroke="#D62828" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <div><div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;color:#FFF6D6;">Não conseguimos carregar os pedidos</div><div style="font-size:14px;color:#C9A876;margin-top:6px;">Verifique a conexão com a cozinha.</div></div>
+        <button onClick="{{ kdsRetry }}" style="background:#D62828;color:#fff;border:none;border-radius:13px;padding:13px 24px;font-weight:700;font-size:15px;cursor:pointer;">Tentar novamente</button>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ kdsOk }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:18px 22px;overflow:hidden;">
+      <sc-for list="{{ kdsColumns }}" as="col" hint-placeholder-count="3">
+        <div style="display:flex;flex-direction:column;min-height:0;background:rgba(255,246,214,.04);border:1px solid rgba(242,183,5,.18);border-radius:18px;overflow:hidden;">
+          <div style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(242,183,5,.16);">
+            <div style="display:flex;align-items:center;gap:9px;"><span style="width:11px;height:11px;border-radius:3px;background:{{ col.color }};"></span><span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;color:#FFF6D6;">{{ col.title }}</span></div>
+            <span style="font-family:'DM Mono',monospace;font-size:13px;color:#C9A876;">{{ col.count }}</span>
+          </div>
+          <div style="flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px;">
+            <sc-for list="{{ col.tickets }}" as="t" hint-placeholder-count="2">
+              <div style="{{ t.cardStyle }}">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                  <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:15px;color:#2A0E0A;">{{ t.id }}</span>
+                  <span style="{{ t.timerStyle }}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>{{ t.mins }} min</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:9px;"><span style="{{ t.tipoStyle }}">{{ t.tipo }}</span><span style="font-size:12px;color:#9A6B52;">{{ t.ref }}</span></div>
+                <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:12px;">
+                  <sc-for list="{{ t.itens }}" as="it" hint-placeholder-count="2">
+                    <div style="display:flex;gap:8px;font-size:14px;color:#2A0E0A;"><span style="font-family:'DM Mono',monospace;font-weight:500;color:#D62828;">{{ it.q }}×</span><span>{{ it.n }}</span></div>
+                  </sc-for>
+                </div>
+                <button onClick="{{ t.onAdvance }}" style="{{ t.btnStyle }}">{{ t.actionLabel }}</button>
+              </div>
+            </sc-for>
+            <sc-if value="{{ col.empty }}" hint-placeholder-val="{{ false }}"><div style="text-align:center;padding:26px 12px;color:#7A5640;font-size:13px;">Nada aqui agora.</div></sc-if>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    </sc-if>
+  </div>
+  </sc-if>
+
+  <!-- ================= GARÇOM (mobile) ================= -->
+  <sc-if value="{{ isGarcom }}" hint-placeholder-val="{{ false }}">
+  <div style="min-height:100vh;background:radial-gradient(120% 80% at 50% 0%, #B01818 0%, #5A0A06 100%);display:flex;flex-direction:column;align-items:center;padding:24px 16px;animation:syFade .25s ease-out;">
+    <div style="width:100%;max-width:1000px;display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+      <button onClick="{{ goHub }}" aria-label="Voltar ao hub" style="width:40px;height:40px;border-radius:12px;background:rgba(255,246,214,.16);border:none;color:#FFF6D6;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;color:#FFF6D6;">App do Garçom</span>
+    </div>
+    <div style="position:relative;width:374px;height:760px;background:#2A0E0A;border-radius:46px;padding:13px;box-shadow:0 30px 70px rgba(0,0,0,.45);">
+      <div style="position:absolute;top:13px;left:50%;transform:translateX(-50%);width:130px;height:26px;background:#2A0E0A;border-radius:0 0 16px 16px;z-index:30;"></div>
+      <div style="position:relative;width:100%;height:100%;background:#FFF6D6;border-radius:34px;overflow:hidden;display:flex;flex-direction:column;">
+        <div style="flex:none;background:#F2B705;padding:22px 18px 14px;display:flex;align-items:center;gap:11px;">
+          <sc-if value="{{ garcomInMesa }}" hint-placeholder-val="{{ false }}"><button onClick="{{ garcomBack }}" aria-label="Voltar" style="width:36px;height:36px;border-radius:11px;background:rgba(122,18,9,.14);border:none;color:#7A1209;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button></sc-if>
+          <div style="width:38px;height:38px;flex:none;"><img src="assets/logo tranparente.png" alt="Bel do Frango" style="width:100%;height:100%;object-fit:contain;"/></div>
+          <div style="flex:1;min-width:0;"><div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;color:#7A1209;">{{ garcomTitle }}</div><div style="font-size:12px;color:#8A4A1C;">{{ garcomSub }}</div></div>
+        </div>
+
+        <!-- MESAS GRID -->
+        <sc-if value="{{ garcomList }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1;overflow-y:auto;padding:16px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <sc-for list="{{ garcomMesas }}" as="m" hint-placeholder-count="6">
+              <button onClick="{{ m.onOpen }}" style="{{ m.cardStyle }}">
+                <div style="display:flex;align-items:center;justify-content:space-between;width:100%;"><span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;color:#2A0E0A;">Mesa {{ m.num }}</span><span style="{{ m.dotStyle }}"></span></div>
+                <div style="{{ m.pillStyle }}">{{ m.statusLabel }}</div>
+                <sc-if value="{{ m.hasOrder }}" hint-placeholder-val="{{ false }}"><div style="font-family:'DM Mono',monospace;font-size:13px;color:#D62828;margin-top:2px;">{{ m.totalFmt }}</div></sc-if>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+        </sc-if>
+
+        <!-- COMANDA -->
+        <sc-if value="{{ garcomInMesa }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:none;display:flex;gap:7px;overflow-x:auto;padding:12px 16px 8px;">
+          <sc-for list="{{ garcomCats }}" as="c" hint-placeholder-count="4">
+            <button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button>
+          </sc-for>
+        </div>
+        <div style="flex:1;overflow-y:auto;padding:0 16px 8px;">
+          <sc-for list="{{ garcomProducts }}" as="p" hint-placeholder-count="4">
+            <div style="display:flex;align-items:center;gap:11px;background:#fff;border:1px solid rgba(122,18,9,.08);border-radius:14px;padding:10px;margin-bottom:9px;">
+              <div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:14px;">{{ p.name }}</div><div style="font-family:'DM Mono',monospace;font-size:12px;color:#D62828;">{{ p.priceFmt }}</div></div>
+              <button onClick="{{ p.onAdd }}" aria-label="Adicionar" style="width:36px;height:36px;border-radius:11px;background:#D62828;color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+            </div>
+          </sc-for>
+        </div>
+        <div style="flex:none;border-top:1px solid rgba(122,18,9,.1);background:#FFF0C2;padding:12px 16px;">
+          <sc-if value="{{ garcomHasOrder }}" hint-placeholder-val="{{ false }}">
+            <div style="max-height:120px;overflow-y:auto;margin-bottom:10px;">
+              <sc-for list="{{ garcomOrder }}" as="it" hint-placeholder-count="2">
+                <div style="display:flex;align-items:center;gap:9px;padding:5px 0;">
+                  <span style="flex:1;font-size:13px;">{{ it.name }}</span>
+                  <div style="display:flex;align-items:center;gap:0;background:#fff;border-radius:9px;padding:2px;">
+                    <button onClick="{{ it.onDec }}" aria-label="Menos" style="width:26px;height:26px;border-radius:7px;border:none;background:#FFF0C2;color:#7A1209;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+                    <span style="font-family:'DM Mono',monospace;min-width:24px;text-align:center;font-size:13px;">{{ it.qty }}</span>
+                    <button onClick="{{ it.onInc }}" aria-label="Mais" style="width:26px;height:26px;border-radius:7px;border:none;background:#D62828;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+                  </div>
+                  <span style="font-family:'DM Mono',monospace;font-size:13px;color:#7A1209;min-width:62px;text-align:right;">{{ it.lineFmt }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="flex:1;"><div style="font-size:11px;color:#9A6B52;">Total da comanda</div><div style="font-family:'DM Mono',monospace;font-weight:500;font-size:18px;color:#D62828;">{{ garcomTotalFmt }}</div></div>
+              <button onClick="{{ garcomSend }}" style="background:#2D9E60;color:#fff;border:none;border-radius:13px;padding:13px 18px;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 8px 18px rgba(45,158,96,.3);">Enviar à cozinha</button>
+            </div>
+          </sc-if>
+          <sc-if value="{{ garcomEmpty }}" hint-placeholder-val="{{ false }}"><div style="text-align:center;padding:8px;color:#9A6B52;font-size:13px;">Toque em + para adicionar itens à comanda.</div></sc-if>
+        </div>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ================= ENTREGADOR (mobile) ================= -->
+  <sc-if value="{{ isEntregador }}" hint-placeholder-val="{{ false }}">
+  <div style="min-height:100vh;background:radial-gradient(120% 80% at 50% 0%, #B01818 0%, #5A0A06 100%);display:flex;flex-direction:column;align-items:center;padding:24px 16px;animation:syFade .25s ease-out;">
+    <div style="width:100%;max-width:1000px;display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+      <button onClick="{{ goHub }}" aria-label="Voltar ao hub" style="width:40px;height:40px;border-radius:12px;background:rgba(255,246,214,.16);border:none;color:#FFF6D6;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;color:#FFF6D6;">App do Entregador</span>
+    </div>
+    <div style="position:relative;width:374px;height:760px;background:#2A0E0A;border-radius:46px;padding:13px;box-shadow:0 30px 70px rgba(0,0,0,.45);">
+      <div style="position:absolute;top:13px;left:50%;transform:translateX(-50%);width:130px;height:26px;background:#2A0E0A;border-radius:0 0 16px 16px;z-index:30;"></div>
+      <div style="position:relative;width:100%;height:100%;background:#FFF6D6;border-radius:34px;overflow:hidden;display:flex;flex-direction:column;">
+        <div style="flex:none;background:#F2B705;padding:22px 18px 16px;display:flex;align-items:center;gap:11px;">
+          <div style="width:38px;height:38px;flex:none;"><img src="assets/logo tranparente.png" alt="Bel do Frango" style="width:100%;height:100%;object-fit:contain;"/></div>
+          <div style="flex:1;"><div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;color:#7A1209;">Marcos · Entregas</div><div style="font-size:12px;color:#8A4A1C;">{{ entregaPend }} pendentes · {{ entregaFeitas }} feitas</div></div>
+        </div>
+        <div style="flex:1;overflow-y:auto;padding:16px;">
+          <sc-for list="{{ entregas }}" as="e" hint-placeholder-count="4">
+            <div style="background:#fff;border:1px solid rgba(122,18,9,.08);border-radius:18px;padding:15px;margin-bottom:12px;box-shadow:0 5px 14px rgba(122,18,9,.05);{{ e.dim }}">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;"><span style="font-family:'DM Mono',monospace;font-weight:500;font-size:14px;">{{ e.id }}</span><span style="{{ e.badgeStyle }}">{{ e.statusLabel }}</span></div>
+              <div style="font-weight:700;font-size:15px;">{{ e.cliente }}</div>
+              <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:#9A6B52;margin-top:3px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg>{{ e.bairro }}</div>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;">
+                <span style="font-family:'DM Mono',monospace;font-size:15px;color:#D62828;font-weight:500;">{{ e.valorFmt }}</span>
+                <sc-if value="{{ e.canAct }}" hint-placeholder-val="{{ true }}"><button onClick="{{ e.onAdvance }}" style="{{ e.btnStyle }}">{{ e.actionLabel }}</button></sc-if>
+                <sc-if value="{{ e.done }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:5px;color:#2D9E60;font-weight:700;font-size:13px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Entregue</span></sc-if>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ================= TOAST ================= -->
+  <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:60;background:#2A0E0A;color:#FFF6D6;padding:13px 20px;border-radius:13px;box-shadow:0 12px 30px rgba(0,0,0,.32);font-weight:600;font-size:14px;display:flex;align-items:center;gap:9px;animation:syToast .25s ease-out;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7BD49B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>{{ toast }}</div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:860}}">
+class Component extends DCLogic {
+  cats = [ { id:'galetos', label:'Galetos' }, { id:'porcoes', label:'Porções' }, { id:'bebidas', label:'Bebidas' }, { id:'sobremesas', label:'Sobremesas' } ];
+  products = [
+    { id:'galeto-inteiro', cat:'galetos', name:'Galeto Inteiro', price:49.9 },
+    { id:'meio-galeto', cat:'galetos', name:'Meio Galeto', price:28.9 },
+    { id:'passarinho', cat:'porcoes', name:'Frango a Passarinho', price:34.9 },
+    { id:'mandioca', cat:'porcoes', name:'Mandioca Frita', price:18.9 },
+    { id:'farofa', cat:'porcoes', name:'Farofa da Casa', price:12.9 },
+    { id:'guarana', cat:'bebidas', name:'Guaraná 2L', price:12.9 },
+    { id:'suco', cat:'bebidas', name:'Suco de Laranja', price:9.9 },
+    { id:'pudim', cat:'sobremesas', name:'Pudim de Leite', price:11.9 }
+  ];
+
+  state = {
+    view:'login', email:'', senha:'', logging:false,
+    garcomMesa:null, garcomCat:'galetos',
+    mesas:[
+      { num:1, status:'ocupada', order:{ 'galeto-inteiro':1, 'guarana':1 } },
+      { num:2, status:'livre', order:{} },
+      { num:3, status:'conta', order:{ 'meio-galeto':2 } },
+      { num:4, status:'ocupada', order:{ 'passarinho':1, 'mandioca':1 } },
+      { num:5, status:'livre', order:{} },
+      { num:6, status:'livre', order:{} }
+    ],
+    tickets:[
+      { id:'#BF2051', tipo:'Entrega', ref:'Mariana S.', mins:2, status:'fila', itens:[{q:1,n:'Galeto Inteiro'},{q:1,n:'Guaraná 2L'}] },
+      { id:'#BF2050', tipo:'Mesa 4', ref:'salão', mins:6, status:'preparo', itens:[{q:1,n:'Combo Família'},{q:2,n:'Suco de Laranja'}] },
+      { id:'#BF2049', tipo:'Retirada', ref:'Júlia', mins:9, status:'preparo', itens:[{q:1,n:'Frango a Passarinho'},{q:1,n:'Mandioca Frita'}] },
+      { id:'#BF2048', tipo:'Mesa 1', ref:'salão', mins:13, status:'pronto', itens:[{q:2,n:'Meio Galeto'}] },
+      { id:'#BF2047', tipo:'Entrega', ref:'Carlos M.', mins:3, status:'fila', itens:[{q:1,n:'Marmita Galeto'},{q:1,n:'Farofa da Casa'}] }
+    ],
+    kdsError:false,
+    entregas:[
+      { id:'#BF2049', cliente:'Rafael Lima', bairro:'Jardim · 2,4 km', valor:65.7, status:'pronto' },
+      { id:'#BF2046', cliente:'Ana Beatriz', bairro:'Centro · 1,1 km', valor:42.8, status:'rota' },
+      { id:'#BF2044', cliente:'Diego Souza', bairro:'São José · 3,8 km', valor:58.9, status:'pronto' },
+      { id:'#BF2041', cliente:'Carla Mendes', bairro:'Centro · 0,9 km', valor:37.9, status:'entregue' }
+    ],
+    toast:''
+  };
+
+  fmt(n){ return 'R$ ' + n.toFixed(2).replace('.', ','); }
+  prod(id){ return this.products.find(p => p.id === id); }
+  showToast(m){ this.setState({ toast:m }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast:'' }), 2200); }
+
+  componentDidMount(){
+    this._iv = setInterval(() => {
+      if (this.state.view === 'kds' && !this.state.kdsError) this.setState(s => ({ tickets: s.tickets.map(t => ({ ...t, mins:t.mins + 1 })) }));
+    }, 6000);
+  }
+  componentWillUnmount(){ clearTimeout(this._t); clearInterval(this._iv); }
+
+  doLogin(){ if (this.state.logging) return; this.setState({ logging:true }); setTimeout(() => this.setState({ logging:false, view:'hub' }), 900); }
+  logout(){ this.setState({ view:'login', email:'', senha:'' }); }
+  go(v){ this.setState({ view:v, garcomMesa:null }); }
+
+  // KDS
+  advanceTicket(id){
+    const flow = ['fila','preparo','pronto'];
+    this.setState(s => {
+      let removed = false;
+      const tickets = s.tickets.map(t => {
+        if (t.id !== id) return t;
+        const i = flow.indexOf(t.status);
+        if (i >= flow.length - 1){ removed = true; return null; }
+        return { ...t, status:flow[i+1], mins:0 };
+      }).filter(Boolean);
+      return { tickets };
+    });
+    this.showToast('Pedido atualizado');
+  }
+  kdsRetry(){ this.setState({ kdsError:false }); this.showToast('Reconectado à cozinha'); }
+
+  // Garçom
+  openMesa(num){ const m = this.state.mesas.find(x => x.num === num); if (m && m.status === 'livre'){ this.setMesaStatus(num,'ocupada'); } this.setState({ garcomMesa:num, garcomCat:'galetos' }); }
+  setMesaStatus(num, status){ this.setState(s => ({ mesas: s.mesas.map(m => m.num === num ? { ...m, status } : m) })); }
+  garcomAdd(num, pid){ this.setState(s => ({ mesas: s.mesas.map(m => { if (m.num !== num) return m; const order = { ...m.order }; order[pid] = (order[pid]||0) + 1; return { ...m, order, status:'ocupada' }; }) })); }
+  garcomInc(num, pid){ this.garcomAdd(num, pid); }
+  garcomDec(num, pid){ this.setState(s => ({ mesas: s.mesas.map(m => { if (m.num !== num) return m; const order = { ...m.order }; order[pid] = (order[pid]||0) - 1; if (order[pid] <= 0) delete order[pid]; return { ...m, order }; }) })); }
+  garcomSend(num){
+    const m = this.state.mesas.find(x => x.num === num); if (!m) return;
+    const itens = Object.keys(m.order).map(pid => ({ q:m.order[pid], n:this.prod(pid).name }));
+    if (!itens.length){ this.showToast('Comanda vazia'); return; }
+    const tk = { id:'#BF' + Math.floor(2052 + Math.random()*40), tipo:'Mesa '+num, ref:'salão', mins:0, status:'fila', itens };
+    this.setState(s => ({ tickets:[tk, ...s.tickets] }));
+    this.showToast('Comanda enviada à cozinha');
+  }
+
+  // Entregador
+  advanceEntrega(id){
+    this.setState(s => ({ entregas: s.entregas.map(e => {
+      if (e.id !== id) return e;
+      if (e.status === 'pronto') return { ...e, status:'rota' };
+      if (e.status === 'rota') return { ...e, status:'entregue' };
+      return e;
+    }) }));
+    this.showToast('Status da entrega atualizado');
+  }
+
+  renderVals(){
+    const s = this.state;
+    const ce = React.createElement;
+    const icon = (d) => ce('svg', { width:24, height:24, viewBox:'0 0 24 24', fill:'none', stroke:'currentColor', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round' }, Array.isArray(d) ? d.map((p,i) => ce('path',{ key:i, d:p })) : ce('path',{ d }));
+
+    const perfis = [
+      { key:'admin', label:'Administrador', tag:'ADMIN', desc:'Visão geral, faturamento e configurações.', cta:'Abrir painel', href:'Bel do Frango - Admin.dc.html', tint:'#B5161C', tintBg:'#FBE3DF', icon:icon(['M3 9l1-5h16l1 5','M4 9v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9','M3 9h18']) },
+      { key:'gerente', label:'Gerente', tag:'GERENTE', desc:'Pedidos, estoque e relatórios do dia.', cta:'Abrir painel', href:'Bel do Frango - Admin.dc.html', tint:'#A8730B', tintBg:'#FBF0CF', icon:icon('M9 17v-6h6v6M3 21h18M5 21V7l7-4 7 4v14') },
+      { key:'garcom', label:'Garçom', tag:'GARÇOM', desc:'Salão, comandas e envio para a cozinha.', cta:'Abrir app', href:'', onClick:(e) => { if(e&&e.preventDefault)e.preventDefault(); this.go('garcom'); }, tint:'#D62828', tintBg:'#FBE3DF', icon:icon(['M5 22h14','M5 2h14','M17 2a5 5 0 0 1-5 5 5 5 0 0 1-5-5','M7 22a5 5 0 0 1 5-5 5 5 0 0 1 5 5']) },
+      { key:'cozinha', label:'Cozinha (KDS)', tag:'OPERAÇÃO', desc:'Fila de produção em tempo real.', cta:'Abrir KDS', href:'', onClick:(e) => { if(e&&e.preventDefault)e.preventDefault(); this.go('kds'); }, tint:'#2563EB', tintBg:'#E6EDFB', icon:icon(['M8 21h8','M12 17v4','M4 4h16v9a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3Z','M8 4v4M16 4v4']) },
+      { key:'entregador', label:'Entregador', tag:'ENTREGA', desc:'Fila de entregas e atualização de status.', cta:'Abrir app', href:'', onClick:(e) => { if(e&&e.preventDefault)e.preventDefault(); this.go('entregador'); }, tint:'#2D9E60', tintBg:'#E6F4EC', icon:icon(['M5.5 17.5a3.5 3.5 0 1 0 0-.01','M18.5 17.5a3.5 3.5 0 1 0 0-.01','M15 17.5H9l-2-7H4','M9 10.5h7l-1.5 7','M14 6h3l1 4']) },
+      { key:'cliente', label:'Cliente', tag:'CLIENTE', desc:'App de delivery e cardápio.', cta:'Abrir app', href:'Bel do Frango.dc.html', tint:'#8A4A1C', tintBg:'#FBEFD8', icon:icon(['M20 21a8 8 0 0 0-16 0','M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z']) }
+    ];
+
+    // KDS columns
+    const colDefs = [ { key:'fila', title:'Na fila', color:'#D62828' }, { key:'preparo', title:'Em preparo', color:'#F2B705' }, { key:'pronto', title:'Pronto', color:'#2D9E60' } ];
+    const actionLabels = { fila:'Iniciar preparo', preparo:'Marcar pronto', pronto:'Despachar / entregar' };
+    const btnColors = { fila:'#D62828', preparo:'#B8860B', pronto:'#2D9E60' };
+    const kdsColumns = colDefs.map(c => {
+      const tickets = s.tickets.filter(t => t.status === c.key).map(t => {
+        const urgent = t.mins >= 10 && t.status !== 'pronto';
+        return {
+          id:t.id, tipo:t.tipo, ref:t.ref, mins:String(t.mins), itens:t.itens,
+          cardStyle:{ background:'#FFF6D6', borderRadius:'14px', padding:'13px', border:'1px solid '+(urgent?'#D62828':'rgba(122,18,9,.1)'), animation: urgent?'syPulse 1.6s infinite':'none' },
+          timerStyle:{ display:'inline-flex', alignItems:'center', gap:'4px', fontFamily:"'DM Mono',monospace", fontSize:'12px', fontWeight:500, color: urgent?'#D62828':'#9A6B52' },
+          tipoStyle:{ fontFamily:"'DM Mono',monospace", fontSize:'11px', fontWeight:500, color:'#7A1209', background:'#F2B705', borderRadius:'7px', padding:'3px 8px' },
+          btnStyle:{ width:'100%', border:'none', cursor:'pointer', borderRadius:'10px', padding:'10px', fontWeight:700, fontSize:'13px', color:'#fff', background:btnColors[c.key] },
+          actionLabel:actionLabels[c.key], onAdvance:() => this.advanceTicket(t.id)
+        };
+      });
+      return { title:c.title, color:c.color, count:String(tickets.length), tickets, empty: tickets.length === 0 };
+    });
+
+    // Garçom
+    const mesaMeta = { livre:{ l:'Livre', c:'#2D9E60' }, ocupada:{ l:'Ocupada', c:'#D62828' }, conta:{ l:'Pagamento', c:'#A8730B' } };
+    const garcomMesas = s.mesas.map(m => {
+      const meta = mesaMeta[m.status];
+      const tot = Object.keys(m.order).reduce((a,pid) => a + this.prod(pid).price * m.order[pid], 0);
+      return { num:String(m.num), statusLabel:meta.l, hasOrder: Object.keys(m.order).length > 0, totalFmt:this.fmt(tot),
+        cardStyle:{ display:'flex', flexDirection:'column', gap:'7px', alignItems:'flex-start', cursor:'pointer', textAlign:'left', borderRadius:'15px', padding:'14px', border:'1px solid '+meta.c+'44', background: m.status==='livre'?'#fff':(m.status==='conta'?'#FCF4DC':'#FFF0EC') },
+        dotStyle:{ width:'11px', height:'11px', borderRadius:'50%', background:meta.c },
+        pillStyle:{ display:'inline-block', fontSize:'11px', fontWeight:700, color:meta.c, background:'#fff', border:'1px solid '+meta.c+'55', borderRadius:'7px', padding:'3px 9px' },
+        onOpen:() => this.openMesa(m.num) };
+    });
+    const selMesa = s.mesas.find(m => m.num === s.garcomMesa);
+    const garcomCats = this.cats.map(c => { const on = s.garcomCat === c.id; return { label:c.label, onClick:() => this.setState({ garcomCat:c.id }), style:{ flex:'none', border:'none', cursor:'pointer', borderRadius:'10px', padding:'8px 13px', fontWeight:700, fontSize:'12px', background: on?'#7A1209':'#FFF0C2', color: on?'#FFF6D6':'#7A1209' } }; });
+    const garcomProducts = this.products.filter(p => p.cat === s.garcomCat).map(p => ({ name:p.name, priceFmt:this.fmt(p.price), onAdd:() => this.garcomAdd(s.garcomMesa, p.id) }));
+    let garcomOrder = [], garcomTotal = 0;
+    if (selMesa){ garcomOrder = Object.keys(selMesa.order).map(pid => { const p = this.prod(pid); const q = selMesa.order[pid]; garcomTotal += p.price*q; return { name:p.name, qty:String(q), lineFmt:this.fmt(p.price*q), onInc:() => this.garcomInc(s.garcomMesa,pid), onDec:() => this.garcomDec(s.garcomMesa,pid) }; }); }
+
+    // Entregador
+    const entMeta = { pronto:{ l:'Pronto p/ retirar', fg:'#D62828', bg:'#FBE3DF' }, rota:{ l:'Em rota', fg:'#2563EB', bg:'#E6EDFB' }, entregue:{ l:'Entregue', fg:'#2D9E60', bg:'#E6F4EC' } };
+    const entregas = s.entregas.map(e => {
+      const meta = entMeta[e.status];
+      return { id:e.id, cliente:e.cliente, bairro:e.bairro, valorFmt:this.fmt(e.valor),
+        statusLabel:meta.l, badgeStyle:{ fontSize:'11px', fontWeight:700, color:meta.fg, background:meta.bg, borderRadius:'8px', padding:'4px 9px' },
+        canAct: e.status !== 'entregue', done: e.status === 'entregue', dim: e.status==='entregue'?'opacity:.6;':'',
+        actionLabel: e.status === 'pronto' ? 'Aceitar entrega' : 'Cheguei / Entregue',
+        btnStyle:{ border:'none', cursor:'pointer', borderRadius:'11px', padding:'10px 15px', fontWeight:700, fontSize:'13px', color:'#fff', background: e.status==='pronto'?'#D62828':'#2D9E60' },
+        onAdvance:() => this.advanceEntrega(e.id) };
+    });
+    const entregaPend = s.entregas.filter(e => e.status !== 'entregue').length;
+    const entregaFeitas = s.entregas.filter(e => e.status === 'entregue').length;
+
+    const inputStyle = { width:'100%', border:'1px solid rgba(122,18,9,.18)', background:'#fff', borderRadius:'12px', padding:'13px', fontSize:'15px', color:'#2A0E0A', outline:'none' };
+
+    return {
+      rootStyle:{ minHeight:'100vh', background:'#FFF6D6', fontFamily:"'DM Sans',system-ui,sans-serif" },
+      isLogin: s.view==='login', isHub: s.view==='hub', isKds: s.view==='kds', isGarcom: s.view==='garcom', isEntregador: s.view==='entregador',
+      goHub:() => this.go('hub'),
+
+      email:s.email, senha:s.senha, onEmail:(e) => this.setState({ email:e.target.value }), onSenha:(e) => this.setState({ senha:e.target.value }),
+      doLogin:() => this.doLogin(), logging:s.logging, loginLabel: s.logging ? 'Entrando...' : 'Entrar', inputStyle,
+      logout:() => this.logout(),
+
+      perfis,
+
+      kdsError:s.kdsError, kdsOk: !s.kdsError, kdsRetry:() => this.kdsRetry(),
+      kdsColumns, kdsActiveCount:String(s.tickets.length),
+
+      garcomMesas, garcomList: s.garcomMesa == null, garcomInMesa: s.garcomMesa != null,
+      garcomTitle: selMesa ? ('Mesa ' + selMesa.num) : 'Salão · Mesas',
+      garcomSub: selMesa ? 'Comanda aberta' : 'Toque numa mesa para abrir',
+      garcomBack:() => this.setState({ garcomMesa:null }),
+      garcomCats, garcomProducts, garcomOrder, garcomHasOrder: garcomOrder.length > 0, garcomEmpty: garcomOrder.length === 0,
+      garcomTotalFmt:this.fmt(garcomTotal), garcomSend:() => this.garcomSend(s.garcomMesa),
+
+      entregas, entregaPend:String(entregaPend), entregaFeitas:String(entregaFeitas),
+
+      toast:s.toast
+    };
+  }
+}
+</script>
+</body>
+</html>

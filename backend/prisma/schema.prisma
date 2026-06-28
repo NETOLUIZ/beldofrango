@@ -1,0 +1,327 @@
+// Schema do backend do protótipo Bel do Frango ATU.
+// Banco e processo próprios (bel_do_frango_atu) — nenhuma relação com outros bancos/projetos.
+// Portado do backend "Bel do frango" original e estendido com o catálogo de
+// "Monte sua marmita" (proteínas/complementos/tamanhos) e foto de produto.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TipoCupom {
+  PERCENTUAL
+  FRETE_GRATIS
+}
+
+enum StatusEntrega {
+  CONFIRMADO
+  PREPARANDO
+  SAIU_ENTREGA
+  ENTREGUE
+  CANCELADO
+}
+
+enum CtaBanner {
+  CARDAPIO
+  PRODUTO
+}
+
+enum FormaPagamento {
+  PIX
+  CARTAO
+  DINHEIRO
+}
+
+enum TipoPedido {
+  ENTREGA
+  MESA
+  RETIRADA
+}
+
+enum StatusMesa {
+  LIVRE
+  OCUPADA
+  RESERVADA
+  CONTA
+}
+
+/// Configurações gerais da loja — linha única (id sempre 1). Hoje só a taxa
+/// de entrega; antes vivia fixa no .env, sem o admin poder mudar sem reiniciar o servidor.
+model Configuracao {
+  id          Int      @id @default(1)
+  taxaEntrega Float    @default(7.9)
+  /// Janela de horário de retirada pra produtos da categoria Galetos (formato "HH:MM").
+  /// A lista de horários de 30 em 30 min é gerada a partir desses dois campos, nunca salva pronta.
+  galetoHorarioInicio String @default("10:00")
+  galetoHorarioFim    String @default("20:00")
+  updatedAt   DateTime @updatedAt
+}
+
+/// Usuario do painel administrativo (cozinha/gestao da galeteria).
+model Admin {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  senha     String
+  nome      String
+  createdAt DateTime @default(now())
+}
+
+/// Garçom — login próprio, separado do Admin. Acesso restrito à tela de
+/// salão (mesas + cardápio pra anotar pedido), nunca ao painel completo.
+model Garcom {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  senha     String
+  nome      String
+  ativo     Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model CategoriaProduto {
+  id            Int            @id @default(autoincrement())
+  nome          String         @unique
+  ordem         Int            @default(0)
+  /// Caminho relativo do arquivo em /uploads/categorias (ex: "categorias/abc123.jpg") — nunca base64 no banco.
+  foto          String?
+  produtos      Produto[]
+  subcategorias Subcategoria[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+/// Subdivisão opcional de uma categoria (ex: dentro de "Bebidas" — Cervejas,
+/// Água, Refrigerante, Água de Coco). Produto.subcategoriaId é opcional —
+/// uma categoria sem subcategorias cadastradas simplesmente não usa isso.
+model Subcategoria {
+  id          Int              @id @default(autoincrement())
+  nome        String
+  ordem       Int              @default(0)
+  categoriaId Int
+  categoria   CategoriaProduto @relation(fields: [categoriaId], references: [id], onDelete: Cascade)
+  produtos    Produto[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@unique([categoriaId, nome])
+}
+
+model Produto {
+  id                Int                  @id @default(autoincrement())
+  categoriaId       Int
+  categoria         CategoriaProduto     @relation(fields: [categoriaId], references: [id])
+  subcategoriaId    Int?
+  subcategoria      Subcategoria?        @relation(fields: [subcategoriaId], references: [id], onDelete: SetNull)
+  nome              String
+  descricaoCurta    String
+  descricaoCompleta String
+  /// Fonte unica de verdade do preco — nunca aceito do corpo da requisicao ao criar pedido.
+  preco             Float
+  avaliacao         Float?
+  tag               String?
+  /// Caminho relativo do arquivo em /uploads/produtos (ex: "produtos/abc123.jpg") — nunca base64 no banco.
+  foto              String?
+  estoque           Int                  @default(0)
+  destaque          Boolean              @default(false)
+  ativo             Boolean              @default(true)
+  itensPedido       ItemPedido[]
+  banners           Banner[]
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+
+  @@index([categoriaId])
+  @@index([subcategoriaId])
+}
+
+model Cupom {
+  id         Int       @id @default(autoincrement())
+  codigo     String    @unique
+  tipo       TipoCupom
+  /// Percentual de desconto (0-100) quando tipo = PERCENTUAL; ignorado se FRETE_GRATIS.
+  percentual Int?
+  ativo      Boolean   @default(true)
+  pedidos    Pedido[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+/// Cliente identificado por telefone no checkout (guest checkout, sem senha).
+/// Dado pessoal (LGPD): vive só aqui no backend — nunca cacheado no frontend.
+model Cliente {
+  id             Int      @id @default(autoincrement())
+  nome           String
+  telefone       String   @unique
+  enderecoPadrao Json?
+  pedidos        Pedido[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Pedido {
+  id             Int            @id @default(autoincrement())
+  /// Chave pública pra tela de acompanhamento (guest, sem login) — nunca o id
+  /// sequencial, que permitiria enumerar/ver pedidos de outros clientes (IDOR).
+  codigoAcompanhamento String   @unique @default(uuid())
+  /// ENTREGA (delivery, fluxo padrão) | MESA (comanda de salão) | RETIRADA (balcão).
+  tipo           TipoPedido     @default(ENTREGA)
+  clienteId      Int?
+  cliente        Cliente?       @relation(fields: [clienteId], references: [id], onDelete: SetNull)
+  /// Pedido de mesa não tem cliente identificado (guest) — nomeCliente vira só "Mesa N" se em branco.
+  mesaId         Int?
+  mesa           Mesa?          @relation(fields: [mesaId], references: [id], onDelete: SetNull)
+  nomeCliente    String
+  /// Obrigatorio para ENTREGA; nulo para MESA/RETIRADA.
+  telefone       String?
+  endereco       Json?
+  itens          ItemPedido[]
+  cupomId        Int?
+  cupom          Cupom?         @relation(fields: [cupomId], references: [id], onDelete: SetNull)
+  /// subtotal/desconto/taxaEntrega/total sao calculados e congelados no servidor na criacao — nunca recebidos prontos do client.
+  subtotal       Float
+  desconto       Float          @default(0)
+  taxaEntrega    Float          @default(0)
+  total          Float
+  /// Definida na criacao (ENTREGA) ou só no fechamento da conta (MESA).
+  formaPagamento FormaPagamento?
+  /// Atualizado manualmente pelo admin (painel) conforme o pedido avanca na cozinha/entrega/mesa.
+  statusEntrega  StatusEntrega  @default(CONFIRMADO)
+  entregadorId   Int?
+  entregador     Entregador?    @relation(fields: [entregadorId], references: [id], onDelete: SetNull)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+/// Um item de pedido é OU um produto fixo do cardápio (produtoId preenchido)
+/// OU uma marmita montada (tamanhoMarmitaId preenchido, com proteínas/complementos
+/// nas tabelas de junção abaixo). O controller garante que só um dos dois é usado.
+model ItemPedido {
+  id                     Int                      @id @default(autoincrement())
+  pedidoId               Int
+  pedido                 Pedido                   @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  produtoId              Int?
+  produto                Produto?                 @relation(fields: [produtoId], references: [id])
+  tamanhoMarmitaId        String?
+  tamanhoMarmita         TamanhoMarmita?          @relation(fields: [tamanhoMarmitaId], references: [id])
+  proteinas              ItemPedidoProteina[]
+  complementos           ItemPedidoComplemento[]
+  quantidade             Int
+  observacoes            String?
+  /// Preco unitario (do produto OU do tamanho de marmita) no momento do pedido — congelado.
+  precoUnitarioCongelado Float
+
+  @@index([pedidoId])
+}
+
+model ItemPedidoProteina {
+  id           Int        @id @default(autoincrement())
+  itemPedidoId Int
+  itemPedido   ItemPedido @relation(fields: [itemPedidoId], references: [id], onDelete: Cascade)
+  proteinaId   Int
+  proteina     Proteina   @relation(fields: [proteinaId], references: [id])
+
+  @@index([itemPedidoId])
+}
+
+model ItemPedidoComplemento {
+  id            Int         @id @default(autoincrement())
+  itemPedidoId  Int
+  itemPedido    ItemPedido  @relation(fields: [itemPedidoId], references: [id], onDelete: Cascade)
+  complementoId Int
+  complemento   Complemento @relation(fields: [complementoId], references: [id])
+
+  @@index([itemPedidoId])
+}
+
+/// Catálogo de proteínas do "Monte sua marmita" — gerenciado pelo admin.
+model Proteina {
+  id         Int                  @id @default(autoincrement())
+  nome       String
+  ativo      Boolean              @default(true)
+  esgotado   Boolean              @default(false)
+  itensUsados ItemPedidoProteina[]
+  createdAt  DateTime             @default(now())
+  updatedAt  DateTime             @updatedAt
+}
+
+/// Catálogo de complementos do "Monte sua marmita" — gerenciado pelo admin.
+model Complemento {
+  id         Int                     @id @default(autoincrement())
+  nome       String
+  ativo      Boolean                 @default(true)
+  esgotado   Boolean                 @default(false)
+  itensUsados ItemPedidoComplemento[]
+  createdAt  DateTime                @default(now())
+  updatedAt  DateTime                @updatedAt
+}
+
+/// Tamanhos fixos da marmita montada ("pequena" | "grande") — id textual fixo,
+/// preço e quantidade de proteínas exigida editáveis pelo admin.
+model TamanhoMarmita {
+  id          String       @id // 'pequena' | 'grande'
+  nome        String
+  qtdProteinas Int
+  preco       Float
+  itensPedido ItemPedido[]
+  updatedAt   DateTime     @updatedAt
+}
+
+/// Banners de promoção da Home. Gerenciados pelo admin — não são mais fixos no código do frontend.
+model Banner {
+  id        Int       @id @default(autoincrement())
+  selo      String
+  titulo    String
+  descricao String
+  ctaLabel  String
+  ctaTipo   CtaBanner @default(CARDAPIO)
+  /// Só usado quando ctaTipo = PRODUTO — pra onde o botão do banner leva.
+  produtoId Int?
+  produto   Produto?  @relation(fields: [produtoId], references: [id], onDelete: SetNull)
+  /// Caminho relativo do arquivo em /uploads/banners (ex: "banners/abc123.jpg") — nunca base64 no banco.
+  foto      String?
+  ativo     Boolean   @default(true)
+  ordem     Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+/// Mesa do salão. O pedido em aberto de uma mesa é o Pedido (tipo MESA) mais
+/// recente com statusEntrega != ENTREGUE/CANCELADO — sem ponteiro denormalizado.
+model Mesa {
+  id          Int        @id @default(autoincrement())
+  numero      Int        @unique
+  lugares     Int        @default(4)
+  status      StatusMesa @default(LIVRE)
+  clienteNome String?
+  /// Marca quando a mesa foi ocupada — usado pra calcular "aberta há X min".
+  abertaEm    DateTime?
+  pedidos     Pedido[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+/// Caixa do dia — aberto pelo admin no início do turno e fechado ao final.
+/// totalVendas é calculado no fechamento (soma dos pedidos ENTREGUE no período).
+model Caixa {
+  id           Int       @id @default(autoincrement())
+  valorInicial Float     @default(0)
+  abertoEm     DateTime  @default(now())
+  fechadoEm    DateTime?
+  /// Calculado no fechamento: soma dos totais dos pedidos ENTREGUE criados entre abertoEm e fechadoEm.
+  totalVendas  Float?
+  createdAt    DateTime  @default(now())
+}
+
+/// Motoboy/entregador que recebe pedidos distribuídos pelo admin.
+/// Login próprio (email/senha) — mesmo esquema do Garcom, nunca acessa rotas de admin.
+model Entregador {
+  id        Int      @id @default(autoincrement())
+  nome      String
+  email     String   @unique
+  senha     String
+  ativo     Boolean  @default(true)
+  pedidos   Pedido[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

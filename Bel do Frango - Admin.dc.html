@@ -1,0 +1,2003 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="scripts/support.js"></script>
+<!-- Runtime DC/React para renderização dos componentes. -->
+</head>
+<body>
+<template id="__bundler_thumbnail" data-bg-color="#23130B">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#23130B"/>
+    <circle cx="600" cy="330" r="150" fill="#FFF3DC"/>
+    <circle cx="600" cy="330" r="150" fill="none" stroke="#F2C078" stroke-width="10"/>
+    <text x="600" y="372" font-family="'Bricolage Grotesque',sans-serif" font-size="150" font-weight="800" fill="#D97706" text-anchor="middle">B</text>
+    <text x="600" y="560" font-family="'Bricolage Grotesque',sans-serif" font-size="62" font-weight="800" fill="#FFF3DC" text-anchor="middle">Bel do Frango</text>
+    <text x="600" y="628" font-family="monospace" font-size="30" letter-spacing="14" fill="#C99A5B" text-anchor="middle">PAINEL ADMIN</text>
+  </svg>
+</template>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'DM Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;color:#1D1009;background:#F6F1E7;}
+  ::-webkit-scrollbar{width:10px;height:10px;}
+  ::-webkit-scrollbar-thumb{background:rgba(29,16,9,.16);border-radius:8px;border:3px solid #F6F1E7;}
+  input,textarea,button,select{font-family:inherit;}
+  textarea{resize:none;}
+  button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid #D97706;outline-offset:2px;}
+  @keyframes adIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes adSlide{from{transform:translateX(40px);opacity:.4;}to{transform:translateX(0);opacity:1;}}
+  @keyframes adFade{from{opacity:0;}to{opacity:1;}}
+  @keyframes adToast{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes adRing{to{transform:rotate(360deg);}}
+</style>
+</helmet>
+
+<!-- ===================== CARREGANDO SESSÃO ===================== -->
+<sc-if value="{{ carregandoSessao }}" hint-placeholder-val="{{ true }}">
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#23130B;">
+  <span style="width:36px;height:36px;border:3px solid rgba(255,255,255,.2);border-top-color:#D97706;border-radius:50%;animation:adRing .7s linear infinite;"></span>
+</div>
+</sc-if>
+
+<!-- ===================== LOGIN ===================== -->
+<sc-if value="{{ mostrarLogin }}" hint-placeholder-val="{{ false }}">
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(120% 90% at 50% 0%, #6B2E12 0%, #23130B 70%);padding:24px;">
+  <div style="width:100%;max-width:380px;background:#FFFBF3;border-radius:24px;padding:32px 28px;box-shadow:0 30px 70px rgba(0,0,0,.4);">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:24px;">
+      <div style="width:56px;height:56px;"><img src="assets/logo tranparente.png" alt="Bel do Frango" style="width:100%;height:100%;object-fit:contain;"/></div>
+      <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;color:#1D1009;">Painel Admin</div>
+      <div style="font-size:13px;color:#8C8075;">Bel do Frango</div>
+    </div>
+    <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;">E-mail</label>
+    <input value="{{ loginEmail }}" onChange="{{ onLoginEmail }}" placeholder="admin@belodofrango.com" style="{{ inputStyleLogin }}"/>
+    <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin:14px 0 6px;">Senha</label>
+    <input type="password" value="{{ loginSenha }}" onChange="{{ onLoginSenha }}" placeholder="••••••••" style="{{ inputStyleLogin }}"/>
+    <sc-if value="{{ hasLoginErro }}" hint-placeholder-val="{{ false }}"><p style="margin:12px 0 0;font-size:13px;font-weight:600;color:#C0392B;">{{ loginErro }}</p></sc-if>
+    <button onClick="{{ fazerLogin }}" style="margin-top:18px;width:100%;background:#D97706;color:#fff;border:none;border-radius:14px;padding:14px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 20px rgba(217,119,6,.28);">{{ loginBtnLabel }}</button>
+  </div>
+</div>
+</sc-if>
+
+<!-- ===================== PAINEL (logado) ===================== -->
+<sc-if value="{{ isLogado }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;height:100vh;width:100%;overflow:hidden;background:#F6F1E7;">
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside style="width:250px;flex:none;background:#23130B;display:flex;flex-direction:column;padding:22px 16px;color:#F4E6CF;">
+    <div style="display:flex;align-items:center;gap:12px;padding:4px 6px 22px;">
+      <div style="width:46px;height:46px;flex:none;"><img src="assets/logo tranparente.png" alt="Bel do Frango" style="width:100%;height:100%;object-fit:contain;"/></div>
+      <div style="min-width:0;">
+        <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;color:#FFF3DC;line-height:1.05;">Bel do Frango</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.2em;color:#C99A5B;text-transform:uppercase;margin-top:2px;">Painel Admin</div>
+      </div>
+    </div>
+
+    <nav style="display:flex;flex-direction:column;gap:4px;margin-top:6px;">
+      <button onClick="{{ goPedidos }}" style="{{ navPedidos }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2h8a2 2 0 0 1 2 2v16l-3-2-3 2-3-2-3 2V4a2 2 0 0 1 2-2Z"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/></svg>
+        <span style="flex:1;text-align:left;">Pedidos</span>
+        <sc-if value="{{ hasNovos }}" hint-placeholder-val="{{ false }}"><span style="min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:#D97706;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;">{{ novosCount }}</span></sc-if>
+      </button>
+      <button onClick="{{ goProdutos }}" style="{{ navProdutos }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1-5h16l1 5"/><path d="M4 9v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9"/><path d="M9 9v11"/><path d="M3 9h18"/></svg>
+        <span style="flex:1;text-align:left;">Produtos</span>
+      </button>
+      <button onClick="{{ goCategorias }}" style="{{ navCategorias }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        <span style="flex:1;text-align:left;">Categorias</span>
+      </button>
+      <button onClick="{{ goMarmitas }}" style="{{ navMarmitas }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8Z"/><path d="M3 10 5 4h14l2 6"/><path d="M12 4v6"/></svg>
+        <span style="flex:1;text-align:left;">Monte sua Marmita</span>
+      </button>
+      <button onClick="{{ goBanners }}" style="{{ navBanners }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.6"/><path d="m21 16-4.5-4.5L7 21"/></svg>
+        <span style="flex:1;text-align:left;">Banners &amp; Cards</span>
+      </button>
+      <button onClick="{{ goMesas }}" style="{{ navMesas }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M5 7l1.5 13"/><path d="M19 7l-1.5 13"/><path d="M9 7V4h6v3"/></svg>
+        <span style="flex:1;text-align:left;">Mesas</span>
+      </button>
+      <button onClick="{{ goCaixa }}" style="{{ navCaixa }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.2"/><path d="M6 12h.01"/><path d="M18 12h.01"/></svg>
+        <span style="flex:1;text-align:left;">Caixa</span>
+        <sc-if value="{{ caixaAberto }}" hint-placeholder-val="{{ false }}"><span style="width:9px;height:9px;border-radius:50%;background:#2D9E60;box-shadow:0 0 0 3px rgba(45,158,96,.28);flex:none;"></span></sc-if>
+      </button>
+      <button onClick="{{ goVendas }}" style="{{ navVendas }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="10"/></svg>
+        <span style="flex:1;text-align:left;">Vendas &amp; Estoque</span>
+      </button>
+      <button onClick="{{ goEntregadores }}" style="{{ navEntregadores }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="18" cy="6" r="3" fill="currentColor"/></svg>
+        <span style="flex:1;text-align:left;">Entregadores</span>
+      </button>
+      <button onClick="{{ goGarcons }}" style="{{ navGarcons }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 2a5 5 0 0 1-5 5 5 5 0 0 1-5-5"/><path d="M7 22a5 5 0 0 1 5-5 5 5 0 0 1 5 5"/></svg>
+        <span style="flex:1;text-align:left;">Garçons</span>
+      </button>
+      <button onClick="{{ goSenha }}" style="{{ navSenha }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1.4"/></svg>
+        <span style="flex:1;text-align:left;">Trocar senha</span>
+      </button>
+    </nav>
+
+    <div style="margin-top:auto;border-top:1px solid rgba(244,230,207,.12);padding-top:14px;display:flex;align-items:center;gap:11px;">
+      <div style="width:38px;height:38px;border-radius:50%;background:#6B2E12;color:#F2C078;display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;flex:none;">{{ adminInicial }}</div>
+      <div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:13px;color:#FFF3DC;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ adminNome }}</div><div style="font-size:11px;color:#C99A5B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ adminEmail }}</div></div>
+      <button onClick="{{ logout }}" aria-label="Sair" style="width:34px;height:34px;border-radius:10px;background:rgba(244,230,207,.08);border:none;color:#C99A5B;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
+    </div>
+  </aside>
+
+  <!-- ===================== MAIN ===================== -->
+  <main style="flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden;">
+    <header style="flex:none;display:flex;align-items:center;gap:18px;padding:18px 28px;background:#FFFBF3;border-bottom:1px solid rgba(29,16,9,.07);">
+      <div style="min-width:0;">
+        <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:23px;margin:0;line-height:1.1;">{{ pageTitle }}</h1>
+        <p style="margin:3px 0 0;font-size:13px;color:#8C8075;">{{ pageSubtitle }}</p>
+      </div>
+      <sc-if value="{{ showSearch }}" hint-placeholder-val="{{ false }}">
+      <div style="margin-left:18px;display:flex;align-items:center;gap:9px;background:#F6F1E7;border:1px solid rgba(29,16,9,.08);border-radius:13px;padding:0 13px;height:42px;width:300px;max-width:34vw;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8C8075" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input value="{{ search }}" onChange="{{ onSearch }}" placeholder="{{ searchPlaceholder }}" aria-label="Buscar" style="flex:1;border:none;background:none;outline:none;font-size:14px;"/>
+      </div>
+      </sc-if>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:14px;">
+        <div style="text-align:right;"><div style="font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:#1D1009;">{{ todayDate }}</div><div style="font-size:11px;color:#8C8075;">{{ openLabel }}</div></div>
+        <span style="width:10px;height:10px;border-radius:50%;background:#2D9E60;box-shadow:0 0 0 4px rgba(45,158,96,.16);"></span>
+      </div>
+    </header>
+
+    <div ref="{{ setScroll }}" style="flex:1;overflow-y:auto;padding:26px 28px 40px;">
+
+      <!-- ---------- PEDIDOS ---------- -->
+      <sc-if value="{{ isPedidos }}" hint-placeholder-val="{{ true }}">
+      <div style="animation:adIn .25s ease-out;">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px;">
+          <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+            <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:16px;padding:16px 18px;box-shadow:0 4px 14px rgba(29,16,9,.04);">
+              <div style="display:flex;align-items:center;gap:8px;color:#8C8075;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;"><span style="{{ k.dotStyle }}"></span>{{ k.label }}</div>
+              <div style="font-family:'DM Mono',monospace;font-weight:500;font-size:27px;color:#1D1009;margin-top:8px;">{{ k.value }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display:flex;gap:9px;margin-bottom:18px;flex-wrap:wrap;">
+          <sc-for list="{{ orderTabs }}" as="t" hint-placeholder-count="6">
+            <button onClick="{{ t.onClick }}" style="{{ t.style }}">{{ t.label }}<sc-if value="{{ t.showCount }}" hint-placeholder-val="{{ false }}"><span style="{{ t.countStyle }}">{{ t.count }}</span></sc-if></button>
+          </sc-for>
+        </div>
+
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;overflow:hidden;box-shadow:0 5px 16px rgba(29,16,9,.05);">
+          <div style="display:grid;grid-template-columns:108px 1.8fr 1fr 110px 120px 150px;gap:14px;padding:13px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;">
+            <span>Pedido</span><span>Cliente / Itens</span><span>Tipo</span><span>Total</span><span>Status</span><span style="text-align:right;">Ação</span>
+          </div>
+          <sc-for list="{{ orderRows }}" as="o" hint-placeholder-count="5">
+            <div onClick="{{ o.onOpen }}" style="display:grid;grid-template-columns:108px 1.8fr 1fr 110px 120px 150px;gap:14px;padding:15px 20px;border-top:1px solid rgba(29,16,9,.06);align-items:center;cursor:pointer;{{ o.rowBg }}">
+              <div><div style="font-family:'DM Mono',monospace;font-weight:500;font-size:13px;">{{ o.id }}</div><div style="font-size:11px;color:#8C8075;margin-top:2px;">{{ o.hora }}</div></div>
+              <div style="min-width:0;"><div style="font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ o.cliente }}</div><div style="font-size:12px;color:#8C8075;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ o.itensResumo }}</div></div>
+              <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:#6B2E12;font-weight:600;"><span style="{{ o.tipoIconStyle }}">{{ o.tipoIcon }}</span>{{ o.tipo }}</div>
+              <div style="font-family:'DM Mono',monospace;font-weight:500;font-size:15px;color:#D97706;">{{ o.totalFmt }}</div>
+              <div><span style="{{ o.badgeStyle }}">{{ o.statusLabel }}</span></div>
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+                <sc-if value="{{ o.canAdvance }}" hint-placeholder-val="{{ false }}"><button onClick="{{ o.onAdvance }}" style="background:#D97706;color:#fff;border:none;border-radius:10px;padding:9px 13px;font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap;">{{ o.advanceLabel }}</button></sc-if>
+                <sc-if value="{{ o.showEntregadorSelect }}" hint-placeholder-val="{{ false }}">
+                  <select onChange="{{ o.onAtribuirEntregador }}" style="border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:9px;padding:7px 10px;font-size:12px;color:#1D1009;cursor:pointer;max-width:148px;">
+                    <option value="">— Entregador —</option>
+                    <sc-for list="{{ o.entregadorOptions }}" as="opt" hint-placeholder-count="2">
+                      <option value="{{ opt.value }}" selected="{{ opt.selected }}">{{ opt.label }}</option>
+                    </sc-for>
+                  </select>
+                </sc-if>
+                <sc-if value="{{ o.isDone }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:5px;color:#2D9E60;font-size:12px;font-weight:700;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>{{ o.doneLabel }}</span></sc-if>
+              </div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ ordersEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:46px;text-align:center;color:#8C8075;">Nenhum pedido neste filtro.</div></sc-if>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- ---------- PRODUTOS ---------- -->
+      <sc-if value="{{ isProdutos }}" hint-placeholder-val="{{ false }}">
+      <div style="animation:adIn .25s ease-out;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap;">
+          <div style="display:flex;gap:7px;flex-wrap:wrap;">
+            <sc-for list="{{ catTabs }}" as="c" hint-placeholder-count="7">
+              <button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button>
+            </sc-for>
+          </div>
+          <button onClick="{{ newProduct }}" style="margin-left:auto;display:flex;align-items:center;gap:8px;background:#6B2E12;color:#FFF3DC;border:none;border-radius:12px;padding:11px 17px;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 6px 16px rgba(107,46,18,.22);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Novo produto</button>
+        </div>
+
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;overflow:hidden;box-shadow:0 5px 16px rgba(29,16,9,.05);">
+          <div style="display:grid;grid-template-columns:62px 2.4fr 1fr 110px 130px 96px 70px;gap:14px;padding:13px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;">
+            <span></span><span>Produto</span><span>Categoria</span><span>Preço</span><span>Estoque</span><span>Status</span><span style="text-align:right;">Editar</span>
+          </div>
+          <sc-for list="{{ productRows }}" as="p" hint-placeholder-count="6">
+            <div onClick="{{ p.onEdit }}" style="display:grid;grid-template-columns:62px 2.4fr 1fr 110px 130px 96px 70px;gap:14px;padding:13px 20px;border-top:1px solid rgba(29,16,9,.06);align-items:center;cursor:pointer;">
+              <sc-if value="{{ p.hasFoto }}" hint-placeholder-val="{{ false }}"><div style="width:48px;height:48px;border-radius:11px;overflow:hidden;flex:none;"><img src="{{ p.fotoSrc }}" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
+              <sc-if value="{{ p.semFoto }}" hint-placeholder-val="{{ true }}"><div style="width:48px;height:48px;border-radius:11px;background:linear-gradient(135deg,#FFE9C2 0%,#F2C078 100%);border:1px solid rgba(180,83,9,.18);display:flex;align-items:center;justify-content:center;"><span style="font-family:'DM Mono',monospace;font-size:8px;color:#B45309;opacity:.7;">foto</span></div></sc-if>
+              <div style="min-width:0;"><div style="font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ p.name }}</div><div style="font-size:12px;color:#8C8075;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ p.desc }}</div></div>
+              <div style="font-size:13px;color:#6B2E12;">{{ p.catLabel }}</div>
+              <div style="font-family:'DM Mono',monospace;font-weight:500;font-size:14px;color:#D97706;">{{ p.priceFmt }}</div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div style="display:flex;align-items:center;background:#F6F1E7;border-radius:9px;padding:2px;">
+                  <button onClick="{{ p.onDec }}" aria-label="Menos estoque" style="width:26px;height:26px;border-radius:7px;border:none;background:#fff;color:#6B2E12;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(0,0,0,.07);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+                  <span style="{{ p.stockStyle }}">{{ p.stock }}</span>
+                  <button onClick="{{ p.onInc }}" aria-label="Mais estoque" style="width:26px;height:26px;border-radius:7px;border:none;background:#D97706;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+                </div>
+              </div>
+              <div><button onClick="{{ p.onToggle }}" style="{{ p.toggleStyle }}"><span style="{{ p.knobStyle }}"></span></button></div>
+              <div style="display:flex;justify-content:flex-end;"><button onClick="{{ p.onEdit }}" aria-label="Editar produto" style="width:34px;height:34px;border-radius:9px;background:#FFF3DC;border:1px solid #F2C078;color:#B45309;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button></div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ productsEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:46px;text-align:center;color:#8C8075;">Nenhum produto encontrado.</div></sc-if>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- ---------- CATEGORIAS ---------- -->
+      <sc-if value="{{ isCategorias }}" hint-placeholder-val="{{ false }}">
+      <div style="animation:adIn .25s ease-out;">
+        <p style="margin:0 0 18px;font-size:13px;color:#8C8075;max-width:560px;">Foto exibida nos círculos de categoria na Home e no cardápio do app do cliente.</p>
+        <input ref="{{ setCategoriaFotoInput }}" type="file" accept="image/*" onChange="{{ onCategoriaFotoSelected }}" style="display:none;"/>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;">
+          <sc-for list="{{ categoriaCards }}" as="cat" hint-placeholder-count="6">
+            <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:16px;box-shadow:0 5px 16px rgba(29,16,9,.05);display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;">
+              <sc-if value="{{ cat.hasFoto }}" hint-placeholder-val="{{ false }}"><div style="width:72px;height:72px;border-radius:50%;overflow:hidden;flex:none;"><img src="{{ cat.fotoSrc }}" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
+              <sc-if value="{{ cat.semFoto }}" hint-placeholder-val="{{ true }}"><div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#FFE9C2 0%,#F2C078 100%);border:1px solid rgba(180,83,9,.18);display:flex;align-items:center;justify-content:center;flex:none;"><span style="font-family:'DM Mono',monospace;font-size:9px;color:#B45309;opacity:.75;">foto</span></div></sc-if>
+              <div style="font-weight:700;font-size:14px;">{{ cat.nome }}</div>
+              <button onClick="{{ cat.onTrocarFoto }}" style="background:#FFF3DC;border:1px solid #F2C078;color:#B45309;border-radius:9px;padding:8px 12px;font-weight:700;font-size:12px;cursor:pointer;width:100%;">Trocar foto</button>
+              <sc-if value="{{ cat.hasFoto }}" hint-placeholder-val="{{ false }}"><button onClick="{{ cat.onRemoverFoto }}" style="background:none;border:none;color:#C0392B;font-size:11.5px;font-weight:600;cursor:pointer;padding:2px;">Remover foto</button></sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- ---------- MONTE SUA MARMITA ---------- -->
+      <sc-if value="{{ isMarmitas }}" hint-placeholder-val="{{ false }}">
+      <div style="animation:adIn .25s ease-out;display:flex;flex-direction:column;gap:22px;">
+
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:18px 20px;box-shadow:0 5px 16px rgba(29,16,9,.05);">
+          <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin:0 0 14px;">Preço por tamanho</h3>
+          <div style="display:flex;gap:16px;flex-wrap:wrap;">
+            <sc-for list="{{ marmitaSizeInputs }}" as="sz" hint-placeholder-count="2">
+              <div style="flex:1;min-width:200px;background:#F6F1E7;border-radius:13px;padding:13px 15px;">
+                <div style="font-weight:700;font-size:14px;margin-bottom:2px;">{{ sz.nome }}</div>
+                <div style="font-size:12px;color:#8C8075;margin-bottom:10px;">{{ sz.proteinasLabel }}</div>
+                <label style="display:block;font-size:12px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Preço (R$)</label>
+                <input value="{{ sz.price }}" onChange="{{ sz.onPrice }}" inputmode="decimal" style="width:100%;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:9px 11px;font-size:14px;outline:none;"/>
+              </div>
+            </sc-for>
+          </div>
+          <button onClick="{{ salvarMarmitaSizes }}" style="margin-top:14px;background:#2D9E60;color:#fff;border:none;border-radius:11px;padding:11px 18px;font-weight:700;font-size:13px;cursor:pointer;">Salvar preços</button>
+        </div>
+
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:18px 20px;box-shadow:0 5px 16px rgba(29,16,9,.05);">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+            <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin:0;flex:1;">Proteínas</h3>
+            <button onClick="{{ novaProteina }}" style="background:#FFF3DC;border:1px solid #F2C078;color:#B45309;border-radius:10px;padding:8px 13px;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nova proteína</button>
+          </div>
+          <sc-if value="{{ isProteinaDraft }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;gap:8px;margin-bottom:12px;">
+              <input value="{{ marmitaDraftNome }}" onChange="{{ onMarmitaDraftNome }}" placeholder="Nome da proteína" style="flex:1;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:9px 12px;font-size:14px;outline:none;"/>
+              <button onClick="{{ salvarMarmitaDraft }}" style="background:#2D9E60;color:#fff;border:none;border-radius:10px;padding:9px 14px;font-weight:700;font-size:13px;cursor:pointer;">Salvar</button>
+              <button onClick="{{ cancelarMarmitaDraft }}" style="background:none;border:1px solid rgba(29,16,9,.14);color:#6B2E12;border-radius:10px;padding:9px 14px;font-weight:700;font-size:13px;cursor:pointer;">Cancelar</button>
+            </div>
+          </sc-if>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <sc-for list="{{ proteinaRows }}" as="it" hint-placeholder-count="4">
+              <div style="display:flex;align-items:center;gap:12px;background:#F6F1E7;border-radius:12px;padding:10px 14px;">
+                <span style="flex:1;font-weight:600;font-size:14px;">{{ it.nome }}</span>
+                <sc-if value="{{ it.esgotado }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:700;color:#C0392B;background:#FBEAE8;border:1px solid #F0CFCB;border-radius:7px;padding:3px 8px;">Esgotado</span></sc-if>
+                <button onClick="{{ it.onToggleEsgotado }}" style="background:none;border:1px solid rgba(29,16,9,.14);color:#6B2E12;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:600;cursor:pointer;">{{ it.esgotadoLabel }}</button>
+                <button onClick="{{ it.onToggleAtivo }}" style="{{ it.toggleStyle }}"><span style="{{ it.knobStyle }}"></span></button>
+                <button onClick="{{ it.onExcluir }}" aria-label="Excluir proteína" style="background:none;border:none;color:#C0392B;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:18px 20px;box-shadow:0 5px 16px rgba(29,16,9,.05);">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+            <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin:0;flex:1;">Complementos</h3>
+            <button onClick="{{ novoComplementoBtn }}" style="background:#FFF3DC;border:1px solid #F2C078;color:#B45309;border-radius:10px;padding:8px 13px;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Novo complemento</button>
+          </div>
+          <sc-if value="{{ isComplementoDraft }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;gap:8px;margin-bottom:12px;">
+              <input value="{{ marmitaDraftNome }}" onChange="{{ onMarmitaDraftNome }}" placeholder="Nome do complemento" style="flex:1;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:9px 12px;font-size:14px;outline:none;"/>
+              <button onClick="{{ salvarMarmitaDraft }}" style="background:#2D9E60;color:#fff;border:none;border-radius:10px;padding:9px 14px;font-weight:700;font-size:13px;cursor:pointer;">Salvar</button>
+              <button onClick="{{ cancelarMarmitaDraft }}" style="background:none;border:1px solid rgba(29,16,9,.14);color:#6B2E12;border-radius:10px;padding:9px 14px;font-weight:700;font-size:13px;cursor:pointer;">Cancelar</button>
+            </div>
+          </sc-if>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <sc-for list="{{ complementoRows }}" as="it" hint-placeholder-count="6">
+              <div style="display:flex;align-items:center;gap:12px;background:#F6F1E7;border-radius:12px;padding:10px 14px;">
+                <span style="flex:1;font-weight:600;font-size:14px;">{{ it.nome }}</span>
+                <sc-if value="{{ it.esgotado }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:700;color:#C0392B;background:#FBEAE8;border:1px solid #F0CFCB;border-radius:7px;padding:3px 8px;">Esgotado</span></sc-if>
+                <button onClick="{{ it.onToggleEsgotado }}" style="background:none;border:1px solid rgba(29,16,9,.14);color:#6B2E12;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:600;cursor:pointer;">{{ it.esgotadoLabel }}</button>
+                <button onClick="{{ it.onToggleAtivo }}" style="{{ it.toggleStyle }}"><span style="{{ it.knobStyle }}"></span></button>
+                <button onClick="{{ it.onExcluir }}" aria-label="Excluir complemento" style="background:none;border:none;color:#C0392B;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+      </div>
+      </sc-if>
+
+      <!-- ---------- BANNERS ---------- -->
+      <sc-if value="{{ isBanners }}" hint-placeholder-val="{{ false }}">
+      <div style="animation:adIn .25s ease-out;max-width:880px;">
+        <div style="display:flex;align-items:center;margin-bottom:16px;">
+          <p style="margin:0;font-size:13px;color:#8C8075;">Banners e cards de destaque exibidos na Home do app do cliente.</p>
+          <button onClick="{{ newBanner }}" style="margin-left:auto;display:flex;align-items:center;gap:8px;background:#6B2E12;color:#FFF3DC;border:none;border-radius:12px;padding:11px 17px;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 6px 16px rgba(107,46,18,.22);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Novo banner</button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <sc-for list="{{ bannerRows }}" as="b" hint-placeholder-count="3">
+            <div style="display:flex;gap:16px;background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:14px;box-shadow:0 5px 16px rgba(29,16,9,.05);align-items:center;">
+              <div style="{{ b.previewStyle }}">
+                <div style="flex:1;min-width:0;"><span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.16em;color:#F2C078;text-transform:uppercase;">{{ b.badge }}</span><div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;color:#FFF3DC;line-height:1.1;margin-top:3px;">{{ b.titulo }}</div><div style="font-size:11px;color:#F2C078;margin-top:2px;">{{ b.subtitulo }}</div></div>
+                <div style="width:46px;height:46px;flex:none;"><img src="assets/logo tranparente.png" alt="" style="width:100%;height:100%;object-fit:contain;"/></div>
+              </div>
+              <sc-if value="{{ b.hasFoto }}" hint-placeholder-val="{{ false }}"><div style="width:56px;height:56px;border-radius:12px;overflow:hidden;flex:none;"><img src="{{ b.fotoSrc }}" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
+              <div style="flex:1;min-width:0;">
+                <div style="display:flex;align-items:center;gap:9px;"><span style="{{ b.statusBadge }}">{{ b.statusLabel }}</span><span style="font-family:'DM Mono',monospace;font-size:11px;color:#8C8075;">posição {{ b.pos }}</span></div>
+                <div style="font-weight:700;font-size:15px;margin-top:7px;">{{ b.titulo }}</div>
+                <div style="font-size:12px;color:#8C8075;margin-top:2px;">{{ b.subtitulo }}</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;flex:none;">
+                <button onClick="{{ b.onToggle }}" style="{{ b.toggleStyle }}"><span style="{{ b.knobStyle }}"></span></button>
+                <button onClick="{{ b.onEdit }}" aria-label="Editar banner" style="width:38px;height:38px;border-radius:10px;background:#FFF3DC;border:1px solid #F2C078;color:#B45309;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>
+                <button onClick="{{ b.onDelete }}" aria-label="Remover banner" style="width:38px;height:38px;border-radius:10px;background:#FBEAE8;border:1px solid #F0CFCB;color:#C0392B;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- ---------- MESAS ---------- -->
+      <sc-if value="{{ isMesas }}" hint-placeholder-val="{{ false }}">
+      <div style="animation:adIn .25s ease-out;">
+        <div style="display:flex;align-items:center;gap:18px;margin-bottom:20px;flex-wrap:wrap;">
+          <sc-for list="{{ mesaLegend }}" as="l" hint-placeholder-count="4">
+            <div style="display:flex;align-items:center;gap:8px;"><span style="width:12px;height:12px;border-radius:4px;background:{{ l.color }};"></span><span style="font-size:13px;color:#6B2E12;font-weight:600;">{{ l.label }}</span><span style="font-family:'DM Mono',monospace;font-size:13px;color:#8C8075;">{{ l.count }}</span></div>
+          </sc-for>
+          <div style="flex:1;"></div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input value="{{ novaMesaNumero }}" onChange="{{ onNovaMesaNumero }}" placeholder="Nº da mesa" inputmode="numeric" style="width:110px;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:11px;padding:9px 12px;font-size:13px;color:#1D1009;outline:none;"/>
+            <button onClick="{{ criarMesa }}" style="background:#D97706;color:#fff;border:none;border-radius:11px;padding:9px 14px;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;">+ Nova mesa</button>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(176px,1fr));gap:16px;">
+          <sc-for list="{{ mesaCards }}" as="m" hint-placeholder-count="12">
+            <button onClick="{{ m.onOpen }}" style="{{ m.cardStyle }}">
+              <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
+                <span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;color:{{ m.ink }};">Mesa {{ m.num }}</span>
+                <span style="{{ m.dotStyle }}"></span>
+              </div>
+              <div style="display:flex;align-items:center;gap:5px;color:{{ m.muted }};font-size:12px;margin-top:4px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg>{{ m.seats }} lugares</div>
+              <sc-if value="{{ m.hasNome }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:5px;margin-top:7px;font-size:13px;font-weight:700;color:{{ m.ink }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8C8075" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>{{ m.nome }}</div></sc-if>
+              <div style="margin-top:auto;width:100%;">
+                <div style="{{ m.statusPill }}">{{ m.statusLabel }}</div>
+                <sc-if value="{{ m.hasOrder }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;"><span style="font-size:11px;color:{{ m.muted }};">{{ m.since }}</span><span style="font-family:'DM Mono',monospace;font-weight:500;font-size:14px;color:{{ m.ink }};">{{ m.totalFmt }}</span></div></sc-if>
+              </div>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- ---------- SENHA ---------- -->
+      <sc-if value="{{ isSenha }}" hint-placeholder-val="{{ false }}">
+      <div style="animation:adIn .25s ease-out;max-width:480px;">
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:20px;padding:26px;box-shadow:0 5px 16px rgba(29,16,9,.05);">
+          <div style="display:flex;align-items:center;gap:13px;margin-bottom:20px;">
+            <span style="width:46px;height:46px;border-radius:14px;background:#FFF3DC;color:#D97706;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+            <div><h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;margin:0;">Trocar senha</h2><p style="margin:2px 0 0;font-size:13px;color:#8C8075;">Use ao menos 6 caracteres.</p></div>
+          </div>
+          <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Senha atual</label>
+          <input type="password" value="{{ pwdAtual }}" onChange="{{ onPwdAtual }}" placeholder="••••••••" style="{{ inputStyle }}"/>
+          <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin:16px 0 6px;">Nova senha</label>
+          <input type="password" value="{{ pwdNova }}" onChange="{{ onPwdNova }}" placeholder="••••••••" style="{{ inputStyle }}"/>
+          <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin:16px 0 6px;">Confirmar nova senha</label>
+          <input type="password" value="{{ pwdConf }}" onChange="{{ onPwdConf }}" placeholder="••••••••" style="{{ inputStyle }}"/>
+          <sc-if value="{{ pwdMsg }}" hint-placeholder-val="{{ false }}"><p style="{{ pwdMsgStyle }}">{{ pwdMsg }}</p></sc-if>
+          <button onClick="{{ savePwd }}" style="margin-top:20px;width:100%;background:#D97706;color:#fff;border:none;border-radius:14px;padding:14px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 20px rgba(217,119,6,.28);">Salvar nova senha</button>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- ---------- CAIXA ---------- -->
+      <sc-if value="{{ isCaixa }}" hint-placeholder-val="{{ false }}">
+      <div style="animation:adIn .25s ease-out;max-width:760px;">
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:18px 20px;box-shadow:0 5px 16px rgba(29,16,9,.05);margin-bottom:18px;">
+          <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin:0 0 4px;">Taxa de entrega</h3>
+          <p style="margin:0 0 14px;font-size:13px;color:#8C8075;">Valor cobrado por pedido de delivery (não se aplica a mesa/retirada).</p>
+          <div style="display:flex;gap:10px;align-items:flex-end;max-width:280px;">
+            <div style="flex:1;">
+              <label style="display:block;font-size:12px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Valor (R$)</label>
+              <input value="{{ taxaEntregaInput }}" onChange="{{ onTaxaEntregaInput }}" inputmode="decimal" style="width:100%;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:9px 11px;font-size:14px;outline:none;"/>
+            </div>
+            <button onClick="{{ salvarTaxaEntrega }}" style="background:#2D9E60;color:#fff;border:none;border-radius:10px;padding:11px 16px;font-weight:700;font-size:13px;cursor:pointer;">Salvar</button>
+          </div>
+        </div>
+
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:18px 20px;box-shadow:0 5px 16px rgba(29,16,9,.05);margin-bottom:18px;">
+          <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin:0 0 4px;">Horário de retirada — Galetos</h3>
+          <p style="margin:0 0 14px;font-size:13px;color:#8C8075;">Janela de horários (de 30 em 30 min) que o cliente pode escolher ao pedir um Galeto. Não afeta as outras categorias.</p>
+          <div style="display:flex;gap:10px;align-items:flex-end;max-width:340px;">
+            <div style="flex:1;">
+              <label style="display:block;font-size:12px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Abre às</label>
+              <input type="time" value="{{ galetoHorarioInicioInput }}" onChange="{{ onGaletoHorarioInicioInput }}" style="width:100%;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:9px 11px;font-size:14px;outline:none;"/>
+            </div>
+            <div style="flex:1;">
+              <label style="display:block;font-size:12px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Fecha às</label>
+              <input type="time" value="{{ galetoHorarioFimInput }}" onChange="{{ onGaletoHorarioFimInput }}" style="width:100%;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:9px 11px;font-size:14px;outline:none;"/>
+            </div>
+            <button onClick="{{ salvarGaletoHorarios }}" style="background:#2D9E60;color:#fff;border:none;border-radius:10px;padding:11px 16px;font-weight:700;font-size:13px;cursor:pointer;">Salvar</button>
+          </div>
+        </div>
+
+        <sc-if value="{{ caixaFechado }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:20px;padding:30px;box-shadow:0 5px 16px rgba(29,16,9,.05);text-align:center;">
+            <div style="width:64px;height:64px;border-radius:50%;background:#F6F1E7;color:#8C8075;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.2"/></svg></div>
+            <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;margin:0 0 6px;">Caixa fechado</h2>
+            <p style="margin:0 0 20px;font-size:14px;color:#8C8075;">Informe o valor inicial (troco) para abrir o caixa.</p>
+            <div style="max-width:280px;margin:0 auto;text-align:left;">
+              <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Valor de abertura (R$)</label>
+              <input value="{{ caixaValorInicial }}" onChange="{{ onCaixaValor }}" inputmode="decimal" placeholder="0,00" style="{{ inputStyle }}"/>
+            </div>
+            <button onClick="{{ abrirCaixa }}" style="margin-top:20px;background:#2D9E60;color:#fff;border:none;border-radius:14px;padding:14px 28px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 20px rgba(45,158,96,.26);">Abrir caixa</button>
+          </div>
+          <sc-if value="{{ hasFechamento }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:16px;background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:20px;box-shadow:0 4px 14px rgba(29,16,9,.04);">
+              <div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;margin-bottom:12px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8C8075" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>Último fechamento · {{ fechamentoHora }}</div>
+              <div style="display:flex;justify-content:space-between;font-size:14px;color:#6B2E12;margin-bottom:8px;"><span>Total recebido</span><span style="font-family:'DM Mono',monospace;">{{ fechamentoRecebido }}</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:14px;color:#6B2E12;"><span>Dinheiro em caixa</span><span style="font-family:'DM Mono',monospace;">{{ fechamentoEmCaixa }}</span></div>
+            </div>
+          </sc-if>
+        </sc-if>
+
+        <sc-if value="{{ caixaAberto }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:14px;background:#E6F4EC;border:1px solid #AEDCC2;border-radius:18px;padding:18px 20px;margin-bottom:18px;">
+            <span style="width:12px;height:12px;border-radius:50%;background:#2D9E60;box-shadow:0 0 0 5px rgba(45,158,96,.2);flex:none;"></span>
+            <div style="flex:1;"><div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;color:#1D7A48;">Caixa aberto</div><div style="font-size:13px;color:#2D9E60;">Desde {{ caixaAbertoEm }} · valor inicial {{ caixaInicialFmt }}</div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px;">
+            <sc-for list="{{ caixaBreakdown }}" as="c" hint-placeholder-count="4">
+              <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:16px;padding:15px 16px;box-shadow:0 4px 14px rgba(29,16,9,.04);">
+                <div style="display:flex;align-items:center;gap:7px;color:#8C8075;font-size:12px;font-weight:600;"><span style="width:9px;height:9px;border-radius:3px;background:{{ c.color }};display:inline-block;"></span>{{ c.label }}</div>
+                <div style="font-family:'DM Mono',monospace;font-weight:500;font-size:19px;color:#1D1009;margin-top:7px;">{{ c.value }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:20px;box-shadow:0 5px 16px rgba(29,16,9,.05);">
+            <div style="display:flex;justify-content:space-between;font-size:14px;color:#6B2E12;margin-bottom:10px;"><span>Valor de abertura</span><span style="font-family:'DM Mono',monospace;">{{ caixaInicialFmt }}</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:14px;color:#6B2E12;margin-bottom:10px;"><span>Total recebido (vendas)</span><span style="font-family:'DM Mono',monospace;">{{ caixaRecebidoFmt }}</span></div>
+            <div style="height:1px;background:rgba(29,16,9,.08);margin:6px 0 12px;"></div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;"><span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;">Dinheiro em caixa</span><span style="font-family:'DM Mono',monospace;font-weight:500;font-size:22px;color:#D97706;">{{ caixaEmCaixaFmt }}</span></div>
+          </div>
+          <button onClick="{{ fecharCaixa }}" style="margin-top:18px;width:100%;background:#23130B;color:#FFF3DC;border:none;border-radius:15px;padding:15px;font-weight:700;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Fechar caixa</button>
+        </sc-if>
+      </div>
+      </sc-if>
+
+      <!-- ---------- ENTREGADORES ---------- -->
+      <sc-if value="{{ isEntregadores }}" hint-placeholder-val="{{ false }}">
+      <div style="animation:adIn .25s ease-out;max-width:820px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+          <button onClick="{{ novoEntregador }}" style="margin-left:auto;display:flex;align-items:center;gap:8px;background:#6B2E12;color:#FFF3DC;border:none;border-radius:12px;padding:11px 17px;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 6px 16px rgba(107,46,18,.22);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Novo entregador
+          </button>
+        </div>
+
+        <sc-if value="{{ isEntregadorDraft }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;background:#FFFBF3;border:1px solid rgba(29,16,9,.08);border-radius:14px;padding:14px;">
+            <div style="display:flex;gap:8px;">
+              <input value="{{ entregadorDraftNome }}" onChange="{{ onEntregadorDraftNome }}" placeholder="Nome do entregador" style="flex:1;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;"/>
+              <input value="{{ entregadorDraftEmail }}" onChange="{{ onEntregadorDraftEmail }}" placeholder="email@exemplo.com" style="flex:1;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;"/>
+            </div>
+            <input type="password" value="{{ entregadorDraftSenha }}" onChange="{{ onEntregadorDraftSenha }}" placeholder="{{ entregadorSenhaPlaceholder }}" style="border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;"/>
+            <div style="display:flex;gap:8px;">
+              <button onClick="{{ salvarEntregadorDraft }}" style="background:#2D9E60;color:#fff;border:none;border-radius:10px;padding:10px 16px;font-weight:700;font-size:13px;cursor:pointer;">Salvar</button>
+              <button onClick="{{ cancelarEntregadorDraft }}" style="background:none;border:1px solid rgba(29,16,9,.14);color:#6B2E12;border-radius:10px;padding:10px 16px;font-weight:700;font-size:13px;cursor:pointer;">Cancelar</button>
+            </div>
+          </div>
+        </sc-if>
+
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;overflow:hidden;box-shadow:0 5px 16px rgba(29,16,9,.05);">
+          <div style="display:grid;grid-template-columns:2fr 2fr 40px 90px;gap:14px;padding:13px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;">
+            <span>Nome</span><span>Email (login)</span><span></span><span style="text-align:right;">Status</span>
+          </div>
+          <sc-for list="{{ entregadorRows }}" as="e" hint-placeholder-count="3">
+            <div style="display:grid;grid-template-columns:2fr 2fr 40px 90px;gap:14px;padding:14px 20px;border-top:1px solid rgba(29,16,9,.06);align-items:center;">
+              <div style="font-weight:700;font-size:14px;">{{ e.nome }}</div>
+              <span style="font-family:'DM Mono',monospace;font-size:12.5px;color:#8C8075;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ e.email }}</span>
+              <button onClick="{{ e.onEdit }}" aria-label="Editar entregador" style="background:#FFF3DC;border:1px solid #F2C078;color:#B45309;border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>
+              <div style="display:flex;justify-content:flex-end;"><button onClick="{{ e.onToggle }}" style="{{ e.toggleStyle }}"><span style="{{ e.knobStyle }}"></span></button></div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ entregadoresEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:46px;text-align:center;color:#8C8075;">Nenhum entregador cadastrado.</div></sc-if>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- ---------- GARÇONS ---------- -->
+      <sc-if value="{{ isGarcons }}" hint-placeholder-val="{{ false }}">
+      <div style="animation:adIn .25s ease-out;max-width:820px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+          <button onClick="{{ novoGarcom }}" style="margin-left:auto;display:flex;align-items:center;gap:8px;background:#6B2E12;color:#FFF3DC;border:none;border-radius:12px;padding:11px 17px;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 6px 16px rgba(107,46,18,.22);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Novo garçom
+          </button>
+        </div>
+
+        <sc-if value="{{ isGarcomDraft }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;background:#FFFBF3;border:1px solid rgba(29,16,9,.08);border-radius:14px;padding:14px;">
+            <div style="display:flex;gap:8px;">
+              <input value="{{ garcomDraftNome }}" onChange="{{ onGarcomDraftNome }}" placeholder="Nome do garçom" style="flex:1;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;"/>
+              <input value="{{ garcomDraftEmail }}" onChange="{{ onGarcomDraftEmail }}" placeholder="email@exemplo.com" style="flex:1;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;"/>
+            </div>
+            <input type="password" value="{{ garcomDraftSenha }}" onChange="{{ onGarcomDraftSenha }}" placeholder="{{ garcomSenhaPlaceholder }}" style="border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;"/>
+            <div style="display:flex;gap:8px;">
+              <button onClick="{{ salvarGarcomDraft }}" style="background:#2D9E60;color:#fff;border:none;border-radius:10px;padding:10px 16px;font-weight:700;font-size:13px;cursor:pointer;">Salvar</button>
+              <button onClick="{{ cancelarGarcomDraft }}" style="background:none;border:1px solid rgba(29,16,9,.14);color:#6B2E12;border-radius:10px;padding:10px 16px;font-weight:700;font-size:13px;cursor:pointer;">Cancelar</button>
+            </div>
+          </div>
+        </sc-if>
+
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;overflow:hidden;box-shadow:0 5px 16px rgba(29,16,9,.05);">
+          <div style="display:grid;grid-template-columns:2fr 2fr 40px 90px;gap:14px;padding:13px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;">
+            <span>Nome</span><span>Email (login)</span><span></span><span style="text-align:right;">Status</span>
+          </div>
+          <sc-for list="{{ garcomRows }}" as="g" hint-placeholder-count="3">
+            <div style="display:grid;grid-template-columns:2fr 2fr 40px 90px;gap:14px;padding:14px 20px;border-top:1px solid rgba(29,16,9,.06);align-items:center;">
+              <div style="font-weight:700;font-size:14px;">{{ g.nome }}</div>
+              <span style="font-family:'DM Mono',monospace;font-size:12.5px;color:#8C8075;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ g.email }}</span>
+              <button onClick="{{ g.onEdit }}" aria-label="Editar garçom" style="background:#FFF3DC;border:1px solid #F2C078;color:#B45309;border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>
+              <div style="display:flex;justify-content:flex-end;"><button onClick="{{ g.onToggle }}" style="{{ g.toggleStyle }}"><span style="{{ g.knobStyle }}"></span></button></div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ garconsEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:46px;text-align:center;color:#8C8075;">Nenhum garçom cadastrado.</div></sc-if>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- ---------- VENDAS & ESTOQUE ---------- -->
+      <sc-if value="{{ isVendas }}" hint-placeholder-val="{{ false }}">
+      <div style="animation:adIn .25s ease-out;">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;">
+          <sc-for list="{{ vendasKpis }}" as="k" hint-placeholder-count="4">
+            <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:16px;padding:16px 18px;box-shadow:0 4px 14px rgba(29,16,9,.04);">
+              <div style="display:flex;align-items:center;gap:8px;color:#8C8075;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;"><span style="{{ k.dotStyle }}"></span>{{ k.label }}</div>
+              <div style="font-family:'DM Mono',monospace;font-weight:500;font-size:27px;color:#1D1009;margin-top:8px;">{{ k.value }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;">
+          <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;overflow:hidden;box-shadow:0 5px 16px rgba(29,16,9,.05);">
+            <div style="padding:16px 20px;border-bottom:1px solid rgba(29,16,9,.06);display:flex;align-items:center;gap:9px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="10"/></svg><h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;margin:0;">Vendidos hoje</h3></div>
+            <div style="display:grid;grid-template-columns:1fr 78px 100px;gap:10px;padding:11px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#8C8075;"><span>Produto</span><span style="text-align:center;">Qtd</span><span style="text-align:right;">Receita</span></div>
+            <sc-for list="{{ soldRows }}" as="r" hint-placeholder-count="6">
+              <div style="display:grid;grid-template-columns:1fr 78px 100px;gap:10px;padding:13px 20px;border-top:1px solid rgba(29,16,9,.05);align-items:center;">
+                <span style="font-weight:600;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ r.name }}</span>
+                <span style="text-align:center;"><span style="font-family:'DM Mono',monospace;font-size:13px;font-weight:500;background:#FFF3DC;border:1px solid #F2C078;color:#B45309;border-radius:8px;padding:3px 9px;">{{ r.qty }}</span></span>
+                <span style="text-align:right;font-family:'DM Mono',monospace;font-size:13px;color:#D97706;">{{ r.revFmt }}</span>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;overflow:hidden;box-shadow:0 5px 16px rgba(29,16,9,.05);">
+            <div style="padding:16px 20px;border-bottom:1px solid rgba(29,16,9,.06);display:flex;align-items:center;gap:9px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B2E12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1-5h16l1 5"/><path d="M4 9v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9"/><path d="M3 9h18"/></svg><h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;margin:0;">Estoque atual</h3></div>
+            <div style="display:grid;grid-template-columns:1fr 80px 96px;gap:10px;padding:11px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#8C8075;"><span>Produto</span><span style="text-align:center;">Estoque</span><span style="text-align:right;">Situação</span></div>
+            <sc-for list="{{ estoqueRows }}" as="r" hint-placeholder-count="6">
+              <div style="display:grid;grid-template-columns:1fr 80px 96px;gap:10px;padding:13px 20px;border-top:1px solid rgba(29,16,9,.05);align-items:center;">
+                <span style="min-width:0;"><span style="font-weight:600;font-size:13.5px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ r.name }}</span><span style="font-size:11px;color:#8C8075;">{{ r.cat }}</span></span>
+                <span style="text-align:center;font-family:'DM Mono',monospace;font-size:15px;{{ r.stockColor }}">{{ r.stock }}</span>
+                <span style="text-align:right;"><span style="{{ r.badgeStyle }}">{{ r.statusLabel }}</span></span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+
+    </div>
+  </main>
+
+  <!-- ===================== ORDER DRAWER ===================== -->
+  <sc-if value="{{ orderOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;z-index:40;">
+    <div onClick="{{ closeOrder }}" style="position:absolute;inset:0;background:rgba(29,16,9,.42);animation:adFade .2s ease-out;"></div>
+    <div style="position:absolute;top:0;right:0;height:100%;width:440px;max-width:92vw;background:#FFFBF3;box-shadow:-12px 0 40px rgba(29,16,9,.2);display:flex;flex-direction:column;animation:adSlide .26s cubic-bezier(.2,.8,.3,1);">
+      <div style="display:flex;align-items:center;gap:12px;padding:20px 22px;border-bottom:1px solid rgba(29,16,9,.07);">
+        <div><div style="font-family:'DM Mono',monospace;font-weight:500;font-size:16px;">{{ od.id }}</div><div style="font-size:12px;color:#8C8075;">{{ od.hora }} · {{ od.tipo }}</div></div>
+        <span style="{{ od.badgeStyle }}">{{ od.statusLabel }}</span>
+        <button onClick="{{ closeOrder }}" aria-label="Fechar" style="margin-left:auto;width:38px;height:38px;border-radius:11px;background:#F6F1E7;border:none;color:#6B2E12;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:20px 22px;">
+        <div style="display:flex;align-items:center;gap:11px;margin-bottom:18px;">
+          <div style="width:42px;height:42px;border-radius:50%;background:#6B2E12;color:#F2C078;display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;flex:none;">{{ od.initial }}</div>
+          <div><div style="font-weight:700;font-size:15px;">{{ od.cliente }}</div><div style="font-size:12px;color:#8C8075;">{{ od.localInfo }}</div></div>
+        </div>
+        <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;margin:0 0 10px;">Itens</h3>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <sc-for list="{{ od.itens }}" as="it" hint-placeholder-count="2">
+            <div style="display:flex;gap:11px;align-items:center;">
+              <span style="font-family:'DM Mono',monospace;font-size:13px;color:#6B2E12;background:#FFF3DC;border:1px solid #F2C078;border-radius:8px;min-width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-weight:500;flex:none;">{{ it.q }}×</span>
+              <span style="flex:1;font-size:14px;">{{ it.n }}</span>
+              <span style="font-family:'DM Mono',monospace;font-size:13px;color:#6B2E12;">{{ it.lineFmt }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="margin-top:16px;border-top:1px dashed rgba(29,16,9,.14);padding-top:14px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;color:#8C8075;margin-bottom:7px;"><span>Subtotal</span><span style="font-family:'DM Mono',monospace;">{{ od.subFmt }}</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;color:#8C8075;margin-bottom:7px;"><span>Taxa de entrega</span><span style="font-family:'DM Mono',monospace;">{{ od.feeFmt }}</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:4px;"><span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;">Total</span><span style="font-family:'DM Mono',monospace;font-weight:500;font-size:20px;color:#D97706;">{{ od.totalFmt }}</span></div>
+          <div style="display:flex;align-items:center;gap:7px;margin-top:10px;font-size:13px;color:#6B2E12;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2.5"/><line x1="2" y1="10" x2="22" y2="10"/></svg>Pagamento: <strong style="font-weight:700;">{{ od.pgto }}</strong></div>
+        </div>
+        <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;margin:22px 0 12px;">Progresso</h3>
+        <div style="display:flex;flex-direction:column;">
+          <sc-for list="{{ od.steps }}" as="s" hint-placeholder-count="4">
+            <div style="display:flex;gap:13px;">
+              <div style="display:flex;flex-direction:column;align-items:center;">
+                <div style="{{ s.dotStyle }}"><sc-if value="{{ s.done }}" hint-placeholder-val="{{ false }}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></sc-if></div>
+                <sc-if value="{{ s.line }}" hint-placeholder-val="{{ false }}"><div style="{{ s.lineStyle }}"></div></sc-if>
+              </div>
+              <div style="padding-bottom:16px;"><div style="{{ s.labelStyle }}">{{ s.label }}</div></div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="padding:16px 22px;border-top:1px solid rgba(29,16,9,.07);display:flex;gap:10px;">
+        <sc-if value="{{ od.canCancel }}" hint-placeholder-val="{{ false }}"><button onClick="{{ od.onCancel }}" style="flex:none;background:#FBEAE8;color:#C0392B;border:1px solid #F0CFCB;border-radius:13px;padding:13px 16px;font-weight:700;font-size:14px;cursor:pointer;">Cancelar</button></sc-if>
+        <sc-if value="{{ od.canAdvance }}" hint-placeholder-val="{{ true }}"><button onClick="{{ od.onAdvance }}" style="flex:1;background:#D97706;color:#fff;border:none;border-radius:13px;padding:13px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 18px rgba(217,119,6,.28);">{{ od.advanceLabel }}</button></sc-if>
+        <sc-if value="{{ od.isDone }}" hint-placeholder-val="{{ false }}"><div style="flex:1;text-align:center;padding:13px;background:#E6F4EC;color:#2D9E60;border-radius:13px;font-weight:700;font-size:14px;">{{ od.doneLabel }}</div></sc-if>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ===================== PRODUCT DRAWER ===================== -->
+  <sc-if value="{{ productOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;z-index:40;">
+    <div onClick="{{ closeProduct }}" style="position:absolute;inset:0;background:rgba(29,16,9,.42);animation:adFade .2s ease-out;"></div>
+    <div style="position:absolute;top:0;right:0;height:100%;width:460px;max-width:92vw;background:#FFFBF3;box-shadow:-12px 0 40px rgba(29,16,9,.2);display:flex;flex-direction:column;animation:adSlide .26s cubic-bezier(.2,.8,.3,1);">
+      <div style="display:flex;align-items:center;gap:12px;padding:20px 22px;border-bottom:1px solid rgba(29,16,9,.07);">
+        <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;margin:0;flex:1;">{{ productDrawerTitle }}</h2>
+        <button onClick="{{ closeProduct }}" aria-label="Fechar" style="width:38px;height:38px;border-radius:11px;background:#F6F1E7;border:none;color:#6B2E12;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:20px 22px;">
+        <div style="display:flex;gap:14px;align-items:center;margin-bottom:20px;">
+          <sc-if value="{{ draftHasFoto }}" hint-placeholder-val="{{ false }}"><div style="width:88px;height:88px;border-radius:16px;overflow:hidden;flex:none;"><img src="{{ draftFotoSrc }}" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
+          <sc-if value="{{ draftSemFoto }}" hint-placeholder-val="{{ true }}"><div style="width:88px;height:88px;border-radius:16px;background:linear-gradient(135deg,#FFE9C2 0%,#F2C078 100%);border:1px solid rgba(180,83,9,.18);display:flex;align-items:center;justify-content:center;flex:none;"><span style="font-family:'DM Mono',monospace;font-size:9px;color:#B45309;opacity:.75;">foto</span></div></sc-if>
+          <input ref="{{ setFotoInput }}" type="file" accept="image/*" onChange="{{ onFotoSelected }}" style="display:none;"/>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <button onClick="{{ triggerFotoUpload }}" style="background:#FFF3DC;border:1px solid #F2C078;color:#B45309;border-radius:11px;padding:10px 14px;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:7px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Enviar foto</button>
+            <sc-if value="{{ draftHasFoto }}" hint-placeholder-val="{{ false }}"><button onClick="{{ removerFoto }}" style="background:none;border:none;color:#C0392B;font-size:12px;font-weight:600;cursor:pointer;padding:4px 2px;text-align:left;">Remover foto</button></sc-if>
+          </div>
+        </div>
+        <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Nome do produto</label>
+        <input value="{{ draftName }}" onChange="{{ onDraftName }}" placeholder="Ex: Galeto Inteiro na Brasa" style="{{ inputStyle }}"/>
+        <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin:16px 0 6px;">Descrição</label>
+        <textarea value="{{ draftDesc }}" onChange="{{ onDraftDesc }}" rows="3" placeholder="Descreva o prato, acompanhamentos, porção..." style="{{ textareaStyle }}"></textarea>
+        <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin:16px 0 6px;">Categoria</label>
+        <div style="display:flex;gap:7px;flex-wrap:wrap;">
+          <sc-for list="{{ draftCatOptions }}" as="c" hint-placeholder-count="6">
+            <button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button>
+          </sc-for>
+        </div>
+        <sc-if value="{{ hasDraftSubcatOptions }}" hint-placeholder-val="{{ false }}">
+          <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin:16px 0 6px;">Subcategoria</label>
+          <div style="display:flex;gap:7px;flex-wrap:wrap;">
+            <sc-for list="{{ draftSubcatOptions }}" as="sc" hint-placeholder-count="4">
+              <button onClick="{{ sc.onClick }}" style="{{ sc.style }}">{{ sc.label }}</button>
+            </sc-for>
+          </div>
+        </sc-if>
+        <div style="display:flex;gap:14px;margin-top:16px;">
+          <div style="flex:1;">
+            <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Preço (R$)</label>
+            <input value="{{ draftPrice }}" onChange="{{ onDraftPrice }}" inputmode="decimal" placeholder="0,00" style="{{ inputStyle }}"/>
+          </div>
+          <div style="flex:1;">
+            <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Estoque (un.)</label>
+            <input value="{{ draftStock }}" onChange="{{ onDraftStock }}" inputmode="numeric" placeholder="0" style="{{ inputStyle }}"/>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;background:#F6F1E7;border-radius:13px;padding:13px 15px;margin-top:18px;">
+          <div><div style="font-weight:700;font-size:14px;">Disponível no app</div><div style="font-size:12px;color:#8C8075;">Clientes podem pedir este item</div></div>
+          <button onClick="{{ toggleDraftActive }}" style="{{ draftToggleStyle }}"><span style="{{ draftKnobStyle }}"></span></button>
+        </div>
+      </div>
+      <div style="padding:16px 22px;border-top:1px solid rgba(29,16,9,.07);display:flex;gap:10px;">
+        <sc-if value="{{ draftIsEdit }}" hint-placeholder-val="{{ false }}"><button onClick="{{ deleteProduct }}" style="flex:none;background:#FBEAE8;color:#C0392B;border:1px solid #F0CFCB;border-radius:13px;padding:13px 16px;font-weight:700;font-size:14px;cursor:pointer;">Excluir</button></sc-if>
+        <button onClick="{{ saveProduct }}" style="flex:1;background:#2D9E60;color:#fff;border:none;border-radius:13px;padding:13px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 18px rgba(45,158,96,.26);">Salvar produto</button>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ===================== BANNER DRAWER ===================== -->
+  <sc-if value="{{ bannerOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;z-index:40;">
+    <div onClick="{{ closeBanner }}" style="position:absolute;inset:0;background:rgba(29,16,9,.42);animation:adFade .2s ease-out;"></div>
+    <div style="position:absolute;top:0;right:0;height:100%;width:460px;max-width:92vw;background:#FFFBF3;box-shadow:-12px 0 40px rgba(29,16,9,.2);display:flex;flex-direction:column;animation:adSlide .26s cubic-bezier(.2,.8,.3,1);">
+      <div style="display:flex;align-items:center;gap:12px;padding:20px 22px;border-bottom:1px solid rgba(29,16,9,.07);">
+        <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;margin:0;flex:1;">{{ bannerDrawerTitle }}</h2>
+        <button onClick="{{ closeBanner }}" aria-label="Fechar" style="width:38px;height:38px;border-radius:11px;background:#F6F1E7;border:none;color:#6B2E12;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:20px 22px;">
+        <div style="{{ bDraftPreview }}">
+          <div style="flex:1;min-width:0;"><span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.16em;color:#F2C078;text-transform:uppercase;">{{ bDraftBadgeP }}</span><div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;color:#FFF3DC;line-height:1.1;margin-top:4px;">{{ bDraftTituloP }}</div><div style="font-size:12px;color:#F2C078;margin-top:3px;">{{ bDraftSubP }}</div></div>
+          <div style="width:54px;height:54px;flex:none;"><img src="assets/logo tranparente.png" alt="" style="width:100%;height:100%;object-fit:contain;"/></div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:center;margin-top:18px;">
+          <sc-if value="{{ bDraftHasFoto }}" hint-placeholder-val="{{ false }}"><div style="width:88px;height:88px;border-radius:16px;overflow:hidden;flex:none;"><img src="{{ bDraftFotoSrc }}" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
+          <sc-if value="{{ bDraftSemFoto }}" hint-placeholder-val="{{ true }}"><div style="width:88px;height:88px;border-radius:16px;background:linear-gradient(135deg,#FFE9C2 0%,#F2C078 100%);border:1px solid rgba(180,83,9,.18);display:flex;align-items:center;justify-content:center;flex:none;"><span style="font-family:'DM Mono',monospace;font-size:9px;color:#B45309;opacity:.75;">foto</span></div></sc-if>
+          <input ref="{{ setBannerFotoInput }}" type="file" accept="image/*" onChange="{{ onBannerFotoSelected }}" style="display:none;"/>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <button onClick="{{ triggerBannerFotoUpload }}" style="background:#FFF3DC;border:1px solid #F2C078;color:#B45309;border-radius:11px;padding:10px 14px;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:7px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Enviar foto do banner</button>
+            <sc-if value="{{ bDraftHasFoto }}" hint-placeholder-val="{{ false }}"><button onClick="{{ removerBannerFoto }}" style="background:none;border:none;color:#C0392B;font-size:12px;font-weight:600;cursor:pointer;padding:4px 2px;text-align:left;">Remover foto</button></sc-if>
+          </div>
+        </div>
+        <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin:18px 0 6px;">Selo (badge)</label>
+        <input value="{{ bDraftBadge }}" onChange="{{ onBBadge }}" placeholder="Ex: Promo do dia" style="{{ inputStyle }}"/>
+        <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin:16px 0 6px;">Título</label>
+        <input value="{{ bDraftTitulo }}" onChange="{{ onBTitulo }}" placeholder="Ex: Galeto com frete grátis" style="{{ inputStyle }}"/>
+        <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin:16px 0 6px;">Subtítulo</label>
+        <input value="{{ bDraftSub }}" onChange="{{ onBSub }}" placeholder="Ex: Pedidos acima de R$ 60" style="{{ inputStyle }}"/>
+        <div style="display:flex;align-items:center;justify-content:space-between;background:#F6F1E7;border-radius:13px;padding:13px 15px;margin-top:18px;">
+          <div><div style="font-weight:700;font-size:14px;">Banner ativo</div><div style="font-size:12px;color:#8C8075;">Exibir na Home do cliente</div></div>
+          <button onClick="{{ toggleBDraftActive }}" style="{{ bDraftToggleStyle }}"><span style="{{ bDraftKnobStyle }}"></span></button>
+        </div>
+      </div>
+      <div style="padding:16px 22px;border-top:1px solid rgba(29,16,9,.07);">
+        <button onClick="{{ saveBanner }}" style="width:100%;background:#2D9E60;color:#fff;border:none;border-radius:13px;padding:13px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 18px rgba(45,158,96,.26);">Salvar banner</button>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ===================== MESA DRAWER ===================== -->
+  <sc-if value="{{ mesaOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;z-index:40;">
+    <div onClick="{{ closeMesa }}" style="position:absolute;inset:0;background:rgba(29,16,9,.42);animation:adFade .2s ease-out;"></div>
+    <div style="position:absolute;top:0;right:0;height:100%;width:420px;max-width:92vw;background:#FFFBF3;box-shadow:-12px 0 40px rgba(29,16,9,.2);display:flex;flex-direction:column;animation:adSlide .26s cubic-bezier(.2,.8,.3,1);">
+      <div style="display:flex;align-items:center;gap:12px;padding:20px 22px;border-bottom:1px solid rgba(29,16,9,.07);">
+        <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;margin:0;flex:1;">Mesa {{ md.num }}</h2>
+        <span style="{{ md.badgeStyle }}">{{ md.statusLabel }}</span>
+        <button onClick="{{ closeMesa }}" aria-label="Fechar" style="width:38px;height:38px;border-radius:11px;background:#F6F1E7;border:none;color:#6B2E12;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:20px 22px;">
+        <div style="display:flex;gap:12px;margin-bottom:16px;">
+          <div style="flex:1;background:#F6F1E7;border-radius:13px;padding:13px;"><div style="font-size:12px;color:#8C8075;">Capacidade</div><div style="font-family:'DM Mono',monospace;font-size:18px;margin-top:3px;">{{ md.seats }} lugares</div></div>
+          <div style="flex:1;background:#F6F1E7;border-radius:13px;padding:13px;"><div style="font-size:12px;color:#8C8075;">Aberta há</div><div style="font-family:'DM Mono',monospace;font-size:18px;margin-top:3px;">{{ md.sinceText }}</div></div>
+        </div>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Nome do cliente na mesa</label>
+        <input value="{{ md.nome }}" onChange="{{ md.onNome }}" placeholder="Ex: Mariana Souza" style="{{ inputStyle }}"/>
+        <div style="height:18px;"></div>
+        <sc-if value="{{ md.hasOrder }}" hint-placeholder-val="{{ false }}">
+          <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;margin:0 0 10px;">Consumo</h3>
+          <div style="display:flex;flex-direction:column;gap:9px;">
+            <sc-for list="{{ md.itens }}" as="it" hint-placeholder-count="2">
+              <div style="display:flex;gap:9px;align-items:center;">
+                <span style="font-family:'DM Mono',monospace;font-size:13px;color:#6B2E12;background:#FFF3DC;border:1px solid #F2C078;border-radius:8px;min-width:30px;height:30px;display:flex;align-items:center;justify-content:center;flex:none;">{{ it.q }}×</span>
+                <span style="flex:1;font-size:14px;">{{ it.n }}</span>
+                <sc-if value="{{ md.canEditItens }}" hint-placeholder-val="{{ false }}"><button onClick="{{ it.onDec }}" aria-label="Diminuir" style="width:26px;height:26px;border-radius:8px;border:1px solid rgba(29,16,9,.12);background:#fff;color:#6B2E12;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button></sc-if>
+                <span style="font-family:'DM Mono',monospace;font-size:13px;color:#6B2E12;min-width:64px;text-align:right;">{{ it.lineFmt }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:14px;border-top:1px dashed rgba(29,16,9,.14);padding-top:13px;"><span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;">Total</span><span style="font-family:'DM Mono',monospace;font-weight:500;font-size:20px;color:#D97706;">{{ md.totalFmt }}</span></div>
+        </sc-if>
+        <sc-if value="{{ md.isFree }}" hint-placeholder-val="{{ false }}">
+          <div style="text-align:center;padding:36px 16px;color:#8C8075;"><div style="width:72px;height:72px;border-radius:50%;background:#E6F4EC;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2D9E60" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>Mesa livre e pronta para receber.</div>
+        </sc-if>
+        <sc-if value="{{ md.canEditItens }}" hint-placeholder-val="{{ false }}">
+          <div style="height:18px;"></div>
+          <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;margin:0 0 10px;">Adicionar item</h3>
+          <div style="display:flex;flex-direction:column;gap:8px;max-height:240px;overflow-y:auto;">
+            <sc-for list="{{ md.produtosDisponiveis }}" as="p" hint-placeholder-count="3">
+              <button onClick="{{ p.onAdd }}" style="display:flex;align-items:center;gap:10px;background:#fff;border:1px solid rgba(29,16,9,.08);border-radius:12px;padding:9px 11px;cursor:pointer;text-align:left;">
+                <span style="flex:1;font-size:13.5px;">{{ p.name }}</span>
+                <span style="font-family:'DM Mono',monospace;font-size:12.5px;color:#8C8075;">{{ p.priceFmt }}</span>
+                <span style="width:28px;height:28px;border-radius:9px;background:#D97706;color:#fff;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+      <div style="padding:16px 22px;border-top:1px solid rgba(29,16,9,.07);display:flex;flex-direction:column;gap:10px;">
+        <sc-if value="{{ md.isConta }}" hint-placeholder-val="{{ false }}">
+          <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;margin-bottom:-2px;">Forma de pagamento</div>
+        </sc-if>
+        <sc-for list="{{ md.actions }}" as="a" hint-placeholder-count="2">
+          <button onClick="{{ a.onClick }}" style="{{ a.style }}">{{ a.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ===================== TOAST ===================== -->
+  <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:60;background:#23130B;color:#FFF3DC;padding:13px 20px;border-radius:13px;box-shadow:0 12px 30px rgba(0,0,0,.3);font-weight:600;font-size:14px;display:flex;align-items:center;gap:9px;animation:adToast .25s ease-out;">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7BD49B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>{{ toast }}
+  </div>
+  </sc-if>
+
+</div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  // Dev usa porta separada (3010); produção roteia /api pro backend via proxy Nginx no mesmo domínio.
+  apiBase = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+    ? 'http://localhost:3010/api'
+    : '/api';
+
+  state = {
+    view:'pedidos',
+    search:'',
+    orderFilter:'todos',
+    selectedOrder:null,
+    prodCat:'todos',
+    productDraft:null,
+    bannerDraft:null,
+    selectedTable:null,
+    pwd:{ atual:'', nova:'', conf:'' },
+    pwdMsg:'', pwdOk:false,
+    toast:'',
+    caixa:{ aberto:false, valorInicial:'', abertoEm:'', fechamento:null },
+    taxaEntregaInput:'',
+    galetoHorarioInicioInput:'', galetoHorarioFimInput:'',
+
+    // ---- sessão (API real — login/logout via cookie httpOnly, nunca em localStorage) ----
+    admin:null, authChecked:false,
+    loginForm:{ email:'', senha:'' }, loginErro:'', loggingIn:false,
+
+    // ---- dados vindos da API (Pedidos, Produtos, Categorias, Banners) — começam vazios até carregarTudo() ----
+    orders:[],
+    products:[],
+    categorias:[],
+    subcategorias:[],
+    banners:[],
+    entregadores:[],
+    entregadorDraft:null,
+    garcons:[],
+    garcomDraft:null,
+
+    // ---- "Monte sua marmita": catálogo próprio de proteínas/complementos + preço por tamanho (via API) ----
+    proteinas:[],
+    complementos:[],
+    marmitaSizes:{
+      pequena:{ nome:'Marmita Pequena', proteinas:1, price:24.9 },
+      grande:{ nome:'Marmita Grande', proteinas:2, price:32.9 }
+    },
+    marmitaDraft:null, // { tipo:'proteinas'|'complementos', nome } — rascunho de novo item
+    tables:[], // carregado da API em carregarMesas() — ver mapMesa()
+    novaMesaNumero:''
+  };
+
+  fee = 7.9;
+  pipeline = ['novo','preparo','rota','concluido'];
+
+  fmt(n){ return 'R$ ' + (Math.round(n*100)/100).toFixed(2).replace('.', ','); }
+  catLabel(id){ const c = this.state.categorias.find(x => x.id === id); return c ? c.nome : '—'; }
+
+  // Mesas mudam por fora (garçom ocupando/servindo) — sem recarregar aqui, a aba ficava
+  // mostrando estado velho até um F5 manual. Refaz a busca ao entrar e mantém um poll leve
+  // enquanto a aba estiver aberta.
+  nav(view){
+    clearInterval(this._mesasPoll);
+    this.setState({ view, productDraft:null, bannerDraft:null, marmitaDraft:null, selectedOrder:null, selectedTable:null, entregadorDraft:null, garcomDraft:null });
+    if (view === 'mesas') {
+      this.carregarMesas();
+      this._mesasPoll = setInterval(() => this.carregarMesas(), 8000);
+    }
+  }
+
+  // ---- API: helpers genéricos (cookie httpOnly enviado automaticamente via credentials:'include') ----
+  async apiCall(path, opts){
+    const res = await fetch(this.apiBase + path, { credentials:'include', ...opts });
+    let data = null;
+    try { data = await res.json(); } catch (e) { /* resposta sem corpo JSON (ex: 204) */ }
+    if (!res.ok) { const erro = new Error((data && data.erro) || ('Erro ' + res.status)); erro.status = res.status; throw erro; }
+    return data;
+  }
+  apiGet(path){ return this.apiCall(path, { method:'GET' }); }
+  apiSend(method, path, body){ return this.apiCall(path, { method, headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(body) }); }
+  apiUpload(path, formData){ return this.apiCall(path, { method:'POST', body: formData }); }
+  apiDelete(path){ return this.apiCall(path, { method:'DELETE' }); }
+
+  // ---- sessão / login ----
+  async checkSession(){
+    try {
+      const { admin } = await this.apiGet('/auth/me');
+      this.setState({ admin, authChecked:true });
+      await this.carregarTudo();
+    } catch (e) {
+      this.setState({ admin:null, authChecked:true });
+    }
+  }
+  onLoginEmail(e){ this.setState(s => ({ loginForm:{ ...s.loginForm, email:e.target.value } })); }
+  onLoginSenha(e){ this.setState(s => ({ loginForm:{ ...s.loginForm, senha:e.target.value } })); }
+  async fazerLogin(){
+    const { email, senha } = this.state.loginForm;
+    if (!email || !senha) { this.setState({ loginErro:'Informe email e senha' }); return; }
+    this.setState({ loggingIn:true, loginErro:'' });
+    try {
+      const { admin } = await this.apiSend('POST', '/auth/login', { email, senha });
+      this.setState({ admin, loggingIn:false, loginForm:{ email:'', senha:'' } });
+      await this.carregarTudo();
+    } catch (e) {
+      this.setState({ loggingIn:false, loginErro: e.message || 'Email ou senha incorretos' });
+    }
+  }
+  async logout(){
+    try { await this.apiSend('POST', '/auth/logout', {}); } catch (e) { /* mesmo se a chamada falhar, limpa a sessão local */ }
+    this.setState({ admin:null });
+  }
+
+  // ---- carregamento inicial (depois de autenticar) ----
+  async carregarTudo(){
+    await Promise.all([
+      this.carregarCategorias(), this.carregarSubcategorias(), this.carregarProdutos(), this.carregarPedidos(),
+      this.carregarBanners(), this.carregarMarmitaConfig(), this.carregarEntregadores(),
+      this.carregarGarcons(), this.carregarCaixa(), this.carregarMesas(), this.carregarConfiguracao()
+    ]);
+  }
+  mapProduto(p){
+    return { id:p.id, cat:p.categoriaId, subcat:p.subcategoriaId, name:p.nome, desc:p.descricaoCurta, price:p.preco, stock:p.estoque, active:p.ativo,
+      foto: p.foto ? this.apiBase.replace('/api', '') + '/uploads/' + p.foto : null };
+  }
+  async carregarCategorias(){
+    const categorias = await this.apiGet('/categorias');
+    this.setState({ categorias });
+  }
+  setCategoriaFotoInput(el){ this._categoriaFotoInput = el; }
+  triggerTrocarFotoCategoria(id){ this._categoriaFotoTargetId = id; if (this._categoriaFotoInput) this._categoriaFotoInput.click(); }
+  async onCategoriaFotoSelected(e){
+    const file = e.target.files[0]; const id = this._categoriaFotoTargetId;
+    if (!file || !id) return;
+    try {
+      const fd = new FormData(); fd.append('foto', file);
+      const { categoria } = await this.apiUpload('/admin/categorias/' + id + '/foto', fd);
+      this.setState(s => ({ categorias: s.categorias.map((c) => c.id === id ? categoria : c) }));
+      this.showToast('Foto da categoria atualizada');
+    } catch (err) { this.showToast(err.message || 'Erro ao enviar foto'); }
+    e.target.value = '';
+  }
+  async removerFotoCategoria(id){
+    try {
+      const { categoria } = await this.apiDelete('/admin/categorias/' + id + '/foto');
+      this.setState(s => ({ categorias: s.categorias.map((c) => c.id === id ? categoria : c) }));
+      this.showToast('Foto removida');
+    } catch (err) { this.showToast(err.message || 'Erro ao remover foto'); }
+  }
+  async carregarSubcategorias(){
+    const subcategorias = await this.apiGet('/subcategorias');
+    this.setState({ subcategorias });
+  }
+  async carregarProdutos(){
+    const produtos = await this.apiGet('/admin/produtos');
+    this.setState({ products: produtos.map((p) => this.mapProduto(p)) });
+  }
+  mapPedido(o){
+    const statusMap = { CONFIRMADO:'novo', PREPARANDO:'preparo', SAIU_ENTREGA:'rota', ENTREGUE:'concluido', CANCELADO:'cancelado' };
+    const tipoMap = { ENTREGA:'Entrega', MESA:'Mesa', RETIRADA:'Retirada' };
+    const pgtoMap = { PIX:'Pix', CARTAO:'Cartão', DINHEIRO:'Dinheiro' };
+    const end = o.endereco || {};
+    const endereco = [end.rua, end.numero, end.bairro].filter(Boolean).join(', ');
+    return {
+      id:'#BF' + o.id, rawId:o.id, cliente:o.nomeCliente, tipo: tipoMap[o.tipo] || 'Entrega', endereco,
+      mesa: o.mesa ? o.mesa.numero : null,
+      pgto: pgtoMap[o.formaPagamento] || 'Na mesa',
+      hora: new Date(o.createdAt).toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' }),
+      status: statusMap[o.statusEntrega] || 'novo',
+      entregadorId: o.entregadorId || null,
+      itens: (o.itens || []).map((it) => ({ n:it.nome, q:it.quantidade, p:it.precoUnitario }))
+    };
+  }
+  async carregarPedidos(){
+    const pedidos = await this.apiGet('/admin/pedidos');
+    this.setState({ orders: pedidos.map((o) => this.mapPedido(o)) });
+  }
+  mapBanner(b){
+    return { id:b.id, badge:b.selo, titulo:b.titulo, subtitulo:b.descricao, active:b.ativo, ctaLabel:b.ctaLabel, ctaTipo:b.ctaTipo, produtoId:b.produtoId, ordem:b.ordem };
+  }
+  async carregarBanners(){
+    const banners = await this.apiGet('/admin/banners');
+    this.setState({ banners: banners.map((b) => this.mapBanner(b)) });
+  }
+  async carregarEntregadores(){
+    const lista = await this.apiGet('/admin/entregadores');
+    this.setState({ entregadores: lista });
+  }
+  async carregarGarcons(){
+    const lista = await this.apiGet('/admin/garcons');
+    this.setState({ garcons: lista });
+  }
+  /** Carrega o status do caixa atual ao inicializar (ou ao voltar para a aba). */
+  async carregarCaixa(){
+    try {
+      const c = await this.apiGet('/admin/caixa');
+      if (c.aberto) {
+        this.setState({ caixa:{ aberto:true, valorInicialNum:c.valorInicial, abertoEm:new Date(c.abertoEm).toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' }), valorInicial:'', fechamento:null, _id:c.id } });
+      }
+    } catch (e) { /* caixa fechado ou endpoint indisponível — mantém estado padrão */ }
+  }
+  async carregarConfiguracao(){
+    const config = await this.apiGet('/admin/configuracao');
+    this.setState({
+      taxaEntregaInput: String(config.taxaEntrega).replace('.', ','),
+      galetoHorarioInicioInput: config.galetoHorarioInicio,
+      galetoHorarioFimInput: config.galetoHorarioFim,
+    });
+  }
+  onTaxaEntregaInput(e){ this.setState({ taxaEntregaInput: e.target.value }); }
+  async salvarTaxaEntrega(){
+    const valor = parseFloat(String(this.state.taxaEntregaInput).replace(/\./g, '').replace(',', '.'));
+    if (!Number.isFinite(valor) || valor < 0) { this.showToast('Valor de taxa inválido'); return; }
+    try {
+      const config = await this.apiSend('PUT', '/admin/configuracao', { taxaEntrega: valor });
+      this.setState({ taxaEntregaInput: String(config.taxaEntrega).replace('.', ',') });
+      this.showToast('Taxa de entrega atualizada');
+    } catch (e) { this.showToast(e.message || 'Erro ao salvar taxa de entrega'); }
+  }
+  onGaletoHorarioInicioInput(e){ this.setState({ galetoHorarioInicioInput: e.target.value }); }
+  onGaletoHorarioFimInput(e){ this.setState({ galetoHorarioFimInput: e.target.value }); }
+  async salvarGaletoHorarios(){
+    const { galetoHorarioInicioInput, galetoHorarioFimInput } = this.state;
+    if (!galetoHorarioInicioInput || !galetoHorarioFimInput) { this.showToast('Informe os dois horários'); return; }
+    if (galetoHorarioInicioInput >= galetoHorarioFimInput) { this.showToast('O horário de abertura precisa ser antes do de fechamento'); return; }
+    try {
+      const config = await this.apiSend('PUT', '/admin/configuracao', {
+        galetoHorarioInicio: galetoHorarioInicioInput, galetoHorarioFim: galetoHorarioFimInput,
+      });
+      this.setState({ galetoHorarioInicioInput: config.galetoHorarioInicio, galetoHorarioFimInput: config.galetoHorarioFim });
+      this.showToast('Horários de retirada atualizados');
+    } catch (e) { this.showToast(e.message || 'Erro ao salvar horários'); }
+  }
+  novoEntregador(){ this.setState({ entregadorDraft: { id:null, nome:'', email:'', senha:'' } }); }
+  editEntregador(e){ this.setState({ entregadorDraft: { id:e.id, nome:e.nome, email:e.email, senha:'' } }); }
+  cancelarEntregadorDraft(){ this.setState({ entregadorDraft: null }); }
+  onEntregadorDraftNome(e){ this.setState(s => ({ entregadorDraft: { ...s.entregadorDraft, nome: e.target.value } })); }
+  onEntregadorDraftEmail(e){ this.setState(s => ({ entregadorDraft: { ...s.entregadorDraft, email: e.target.value } })); }
+  onEntregadorDraftSenha(e){ this.setState(s => ({ entregadorDraft: { ...s.entregadorDraft, senha: e.target.value } })); }
+  async salvarEntregadorDraft(){
+    const d = this.state.entregadorDraft;
+    const nome = (d?.nome || '').trim();
+    const email = (d?.email || '').trim();
+    if (!nome || !email){ this.showToast('Informe nome e email'); return; }
+    if (!d.id && !d.senha){ this.showToast('Defina uma senha para o novo entregador'); return; }
+    try {
+      const payload = { nome, email };
+      if (d.senha) payload.senha = d.senha;
+      const salvo = d.id
+        ? await this.apiSend('PUT', '/admin/entregadores/' + d.id, payload)
+        : await this.apiSend('POST', '/admin/entregadores', payload);
+      this.setState(s => ({
+        entregadores: d.id ? s.entregadores.map(x => x.id === d.id ? salvo : x) : [...s.entregadores, salvo],
+        entregadorDraft: null
+      }));
+      this.showToast(d.id ? 'Entregador atualizado' : 'Entregador cadastrado');
+    } catch (e) { this.showToast(e.message || 'Erro ao salvar entregador'); }
+  }
+  async toggleEntregadorAtivo(id){
+    const e = this.state.entregadores.find(x => x.id === id); if (!e) return;
+    try {
+      const updated = await this.apiSend('PUT', '/admin/entregadores/' + id, { ativo: !e.ativo });
+      this.setState(s => ({ entregadores: s.entregadores.map(x => x.id === id ? updated : x) }));
+    } catch (err) { this.showToast('Erro ao atualizar entregador'); }
+  }
+  novoGarcom(){ this.setState({ garcomDraft: { id:null, nome:'', email:'', senha:'' } }); }
+  editGarcom(g){ this.setState({ garcomDraft: { id:g.id, nome:g.nome, email:g.email, senha:'' } }); }
+  cancelarGarcomDraft(){ this.setState({ garcomDraft: null }); }
+  onGarcomDraftNome(e){ this.setState(s => ({ garcomDraft: { ...s.garcomDraft, nome: e.target.value } })); }
+  onGarcomDraftEmail(e){ this.setState(s => ({ garcomDraft: { ...s.garcomDraft, email: e.target.value } })); }
+  onGarcomDraftSenha(e){ this.setState(s => ({ garcomDraft: { ...s.garcomDraft, senha: e.target.value } })); }
+  async salvarGarcomDraft(){
+    const d = this.state.garcomDraft;
+    const nome = (d?.nome || '').trim();
+    const email = (d?.email || '').trim();
+    if (!nome || !email){ this.showToast('Informe nome e email'); return; }
+    if (!d.id && !d.senha){ this.showToast('Defina uma senha para o novo garçom'); return; }
+    try {
+      const payload = { nome, email };
+      if (d.senha) payload.senha = d.senha;
+      const salvo = d.id
+        ? await this.apiSend('PUT', '/admin/garcons/' + d.id, payload)
+        : await this.apiSend('POST', '/admin/garcons', payload);
+      this.setState(s => ({
+        garcons: d.id ? s.garcons.map(x => x.id === d.id ? salvo : x) : [...s.garcons, salvo],
+        garcomDraft: null
+      }));
+      this.showToast(d.id ? 'Garçom atualizado' : 'Garçom cadastrado');
+    } catch (e) { this.showToast(e.message || 'Erro ao salvar garçom'); }
+  }
+  async toggleGarcomAtivo(id){
+    const g = this.state.garcons.find(x => x.id === id); if (!g) return;
+    try {
+      const updated = await this.apiSend('PUT', '/admin/garcons/' + id, { ativo: !g.ativo });
+      this.setState(s => ({ garcons: s.garcons.map(x => x.id === id ? updated : x) }));
+    } catch (err) { this.showToast('Erro ao atualizar garçom'); }
+  }
+  async atribuirEntregador(pedidoRawId, entregadorId){
+    try {
+      await this.apiSend('PUT', '/admin/pedidos/' + pedidoRawId + '/entregador', { entregadorId: entregadorId || null });
+      this.setState(s => ({ orders: s.orders.map(o => o.rawId === pedidoRawId ? { ...o, entregadorId: entregadorId || null } : o) }));
+      this.showToast(entregadorId ? 'Entregador atribuído' : 'Entregador removido');
+    } catch (err) { this.showToast('Erro ao atribuir entregador'); }
+  }
+  async carregarMarmitaConfig(){
+    const [proteinas, complementos, tamanhos] = await Promise.all([
+      this.apiGet('/admin/proteinas'), this.apiGet('/admin/complementos'), this.apiGet('/marmita-tamanhos')
+    ]);
+    const marmitaSizes = {};
+    tamanhos.forEach((t) => { marmitaSizes[t.id] = { nome:t.nome, proteinas:t.qtdProteinas, price:t.preco }; });
+    this.setState({ proteinas, complementos, marmitaSizes });
+  }
+
+  payBreakdown(){
+    const pay = { Dinheiro:0, Pix:0, 'Cartão':0, 'Na mesa':0 };
+    this.state.orders.filter(o => o.status !== 'cancelado').forEach(o => {
+      const t = this.orderTotals(o).total;
+      pay[o.pgto] = (pay[o.pgto] || 0) + t;
+    });
+    return pay;
+  }
+  async abrirCaixa(){
+    const v = parseFloat(String(this.state.caixa.valorInicial).replace(/\./g,'').replace(',','.')) || 0;
+    try {
+      const res = await this.apiSend('POST', '/admin/caixa/abrir', { valorInicial: v });
+      const hora = new Date(res.abertoEm).toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
+      this.setState(s => ({ caixa:{ ...s.caixa, aberto:true, valorInicialNum:v, abertoEm:hora, _id:res.id } }));
+      this.showToast('Caixa aberto');
+    } catch (e) {
+      if (e.status === 409) { this.showToast('Caixa já está aberto'); await this.carregarCaixa(); }
+      else { this.showToast(e.message || 'Erro ao abrir caixa'); }
+    }
+  }
+  async fecharCaixa(){
+    try {
+      const res = await this.apiSend('POST', '/admin/caixa/fechar', {});
+      const totalVendas = res.totalVendas || 0;
+      const pay = this.payBreakdown();
+      const inicial = this.state.caixa.valorInicialNum || 0;
+      const emCaixa = inicial + (pay.Dinheiro || 0);
+      const hora = new Date().toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
+      this.setState({ caixa:{ aberto:false, valorInicial:'', abertoEm:'', fechamento:{ hora, recebido:totalVendas, emCaixa } } });
+      this.showToast('Caixa fechado');
+    } catch (e) { this.showToast(e.message || 'Erro ao fechar caixa'); }
+  }
+
+  showToast(msg){
+    this.setState({ toast:msg });
+    clearTimeout(this._toast);
+    this._toast = setTimeout(() => this.setState({ toast:'' }), 2200);
+  }
+
+  // Ao montar, só confere se já existe uma sessão válida (cookie httpOnly) — nenhum dado de produto/pedido
+  // fica em localStorage; tudo vem da API depois que checkSession() confirma o login.
+  componentDidMount(){
+    this.checkSession();
+  }
+
+  // ---- upload de foto do produto (multipart pra API — o arquivo fica em disco no servidor, nunca base64) ----
+  setFotoInput(el){ this._fotoInput = el; }
+  triggerFotoUpload(){ if (this._fotoInput) this._fotoInput.click(); }
+  onFotoSelected(e){
+    const file = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { this.showToast('Selecione um arquivo de imagem'); return; }
+    // Preview instantâneo local (FileReader) — o arquivo em si só é enviado ao servidor quando o produto for salvo.
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.setState(s => ({ productDraft: s.productDraft ? { ...s.productDraft, foto:reader.result, fotoFile:file } : s.productDraft }));
+    };
+    reader.readAsDataURL(file);
+  }
+  removerFoto(){
+    const d = this.state.productDraft; if (!d) return;
+    this.setState(s => ({ productDraft:{ ...s.productDraft, foto:null, fotoFile:null } }));
+    if (d.id) this.apiDelete('/admin/produtos/' + d.id + '/foto').catch(() => {}); // produto já existente: remove no servidor já
+  }
+
+  // ---- upload de foto do banner (multipart — igual ao produto) ----
+  setBannerFotoInput(el){ this._bannerFotoInput = el; }
+  triggerBannerFotoUpload(){ if (this._bannerFotoInput) this._bannerFotoInput.click(); }
+  onBannerFotoSelected(e){
+    const file = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { this.showToast('Selecione um arquivo de imagem'); return; }
+    // Preview instantâneo local (FileReader) — o arquivo só é enviado ao servidor quando o banner for salvo.
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.setState(s => ({ bannerDraft: s.bannerDraft ? { ...s.bannerDraft, foto:reader.result, fotoFile:file } : s.bannerDraft }));
+    };
+    reader.readAsDataURL(file);
+  }
+  removerBannerFoto(){
+    const d = this.state.bannerDraft; if (!d) return;
+    this.setState(s => ({ bannerDraft:{ ...s.bannerDraft, foto:null, fotoFile:null } }));
+    if (d.id) this.apiDelete('/admin/banners/' + d.id + '/foto').catch(() => {}); // banner existente: remove no servidor
+  }
+
+  // ---- "Monte sua marmita": CRUD de proteínas e complementos + preço dos tamanhos (via API) ----
+  novoMarmitaItem(tipo){ this.setState({ marmitaDraft:{ tipo, nome:'' } }); } // tipo: 'proteinas' | 'complementos'
+  onMarmitaDraftNome(e){ this.setState(s => ({ marmitaDraft: s.marmitaDraft ? { ...s.marmitaDraft, nome:e.target.value } : s.marmitaDraft })); }
+  cancelarMarmitaDraft(){ this.setState({ marmitaDraft:null }); }
+  async salvarMarmitaDraft(){
+    const d = this.state.marmitaDraft; if (!d) return;
+    if (!d.nome.trim()) { this.showToast('Informe o nome'); return; }
+    const path = d.tipo === 'proteinas' ? '/admin/proteinas' : '/admin/complementos';
+    try {
+      const item = await this.apiSend('POST', path, { nome:d.nome.trim() });
+      this.setState(s => ({ [d.tipo]: [...s[d.tipo], item], marmitaDraft:null }));
+      this.showToast(d.tipo === 'proteinas' ? 'Proteína adicionada' : 'Complemento adicionado');
+    } catch (e) { this.showToast(e.message || 'Erro ao salvar'); }
+  }
+  async toggleMarmitaAtivo(tipo, id){
+    const item = this.state[tipo].find(x => x.id === id); if (!item) return;
+    const path = (tipo === 'proteinas' ? '/admin/proteinas/' : '/admin/complementos/') + id;
+    try {
+      const updated = await this.apiSend('PUT', path, { ativo: !item.ativo });
+      this.setState(s => ({ [tipo]: s[tipo].map(x => x.id === id ? updated : x) }));
+    } catch (e) { this.showToast('Erro ao atualizar'); }
+  }
+  async toggleMarmitaEsgotado(tipo, id){
+    const item = this.state[tipo].find(x => x.id === id); if (!item) return;
+    const path = (tipo === 'proteinas' ? '/admin/proteinas/' : '/admin/complementos/') + id;
+    try {
+      const updated = await this.apiSend('PUT', path, { esgotado: !item.esgotado });
+      this.setState(s => ({ [tipo]: s[tipo].map(x => x.id === id ? updated : x) }));
+    } catch (e) { this.showToast('Erro ao atualizar'); }
+  }
+  async excluirMarmitaItem(tipo, id){
+    const path = (tipo === 'proteinas' ? '/admin/proteinas/' : '/admin/complementos/') + id;
+    try {
+      await this.apiDelete(path);
+      this.setState(s => ({ [tipo]: s[tipo].filter(x => x.id !== id) }));
+      this.showToast('Removido');
+    } catch (e) { this.showToast(e.message || 'Erro ao remover'); }
+  }
+  onMarmitaSizePreco(sizeId){
+    return (e) => {
+      const marmitaSizes = { ...this.state.marmitaSizes, [sizeId]: { ...this.state.marmitaSizes[sizeId], price:e.target.value } };
+      this.setState({ marmitaSizes });
+    };
+  }
+  async salvarMarmitaSizes(){
+    const sizes = this.state.marmitaSizes;
+    try {
+      await Promise.all(Object.keys(sizes).map((id) =>
+        this.apiSend('PUT', '/admin/marmita-tamanhos/' + id, { preco: parseFloat(String(sizes[id].price).replace(',','.')) || 0 })
+      ));
+      await this.carregarMarmitaConfig();
+      this.showToast('Preços salvos');
+    } catch (e) { this.showToast(e.message || 'Erro ao salvar preços'); }
+  }
+
+  statusLabel(status, tipo){
+    if (status === 'novo') return 'Novo';
+    if (status === 'preparo') return 'Em preparo';
+    if (status === 'cancelado') return 'Cancelado';
+    if (status === 'rota') return tipo === 'Entrega' ? 'Saiu p/ entrega' : tipo === 'Mesa' ? 'Servindo' : 'Pronto p/ retirada';
+    if (status === 'concluido') return tipo === 'Entrega' ? 'Entregue' : tipo === 'Mesa' ? 'Finalizado' : 'Retirado';
+    return status;
+  }
+  advanceLabel(status, tipo){
+    if (status === 'novo') return 'Iniciar preparo';
+    if (status === 'preparo') return tipo === 'Entrega' ? 'Despachar' : tipo === 'Mesa' ? 'Servir' : 'Marcar pronto';
+    if (status === 'rota') return tipo === 'Entrega' ? 'Confirmar entrega' : 'Finalizar';
+    return '';
+  }
+  statusColors(status){
+    switch(status){
+      case 'novo': return { fg:'#B45309', bg:'#FDEFD8', bd:'#F2C078' };
+      case 'preparo': return { fg:'#A8730B', bg:'#FBF0CF', bd:'#E8C766' };
+      case 'rota': return { fg:'#2563EB', bg:'#E8EEFC', bd:'#BBCDF6' };
+      case 'concluido': return { fg:'#2D9E60', bg:'#E6F4EC', bd:'#AEDCC2' };
+      case 'cancelado': return { fg:'#C0392B', bg:'#FBEAE8', bd:'#F0CFCB' };
+      default: return { fg:'#8C8075', bg:'#F6F1E7', bd:'#E0D6C6' };
+    }
+  }
+  badge(status, tipo){
+    const c = this.statusColors(status);
+    return { style:{ display:'inline-flex', alignItems:'center', padding:'5px 11px', borderRadius:'9px', fontSize:'12px', fontWeight:700, color:c.fg, background:c.bg, border:'1px solid '+c.bd, whiteSpace:'nowrap' }, label:this.statusLabel(status, tipo) };
+  }
+
+  orderTotals(o){
+    const sub = o.itens.reduce((a, x) => a + x.p * x.q, 0);
+    const fee = o.tipo === 'Entrega' ? this.fee : 0;
+    return { sub, fee, total: sub + fee };
+  }
+
+  // Avança o pedido pra próxima etapa do pipeline local (novo→preparo→rota→concluido), espelhando no status real da API.
+  async advanceOrder(id){
+    const statusMapReverse = { novo:'CONFIRMADO', preparo:'PREPARANDO', rota:'SAIU_ENTREGA', concluido:'ENTREGUE' };
+    const o = this.state.orders.find((x) => x.id === id);
+    if (!o || o.status === 'cancelado') return;
+    const i = this.pipeline.indexOf(o.status);
+    if (i < 0 || i >= this.pipeline.length - 1) return;
+    const novoStatus = this.pipeline[i + 1];
+    try {
+      await this.apiSend('PUT', '/admin/pedidos/' + o.rawId + '/status', { statusEntrega: statusMapReverse[novoStatus] });
+      this.setState(s => ({ orders: s.orders.map((x) => x.id === id ? { ...x, status:novoStatus } : x) }));
+    } catch (e) { this.showToast('Erro ao atualizar pedido'); }
+  }
+  async cancelOrder(id){
+    const o = this.state.orders.find((x) => x.id === id); if (!o) return;
+    try {
+      await this.apiSend('PUT', '/admin/pedidos/' + o.rawId + '/status', { statusEntrega:'CANCELADO' });
+      this.setState(s => ({ orders: s.orders.map((x) => x.id === id ? { ...x, status:'cancelado' } : x) }));
+      this.showToast('Pedido cancelado');
+    } catch (e) { this.showToast('Erro ao cancelar pedido'); }
+  }
+
+  // ---- products (via API) ----
+  async adjustStock(id, d){
+    try {
+      const updated = await this.apiSend('PUT', '/admin/produtos/' + id + '/estoque', { delta:d });
+      this.setState(s => ({ products: s.products.map((p) => p.id === id ? this.mapProduto(updated) : p) }));
+    } catch (e) { this.showToast('Erro ao ajustar estoque'); }
+  }
+  async toggleProduct(id){
+    const p = this.state.products.find((x) => x.id === id); if (!p) return;
+    try {
+      const updated = await this.apiSend('PUT', '/admin/produtos/' + id, { ativo: !p.active });
+      this.setState(s => ({ products: s.products.map((x) => x.id === id ? this.mapProduto(updated) : x) }));
+    } catch (e) { this.showToast('Erro ao atualizar produto'); }
+  }
+  newProduct(){
+    const catId = this.state.categorias[0] ? this.state.categorias[0].id : null;
+    this.setState({ productDraft:{ id:null, name:'', desc:'', cat:catId, subcat:null, price:'', stock:'', active:true, foto:null, fotoFile:null } });
+  }
+  editProduct(p){ this.setState({ productDraft:{ id:p.id, name:p.name, desc:p.desc, cat:p.cat, subcat:p.subcat||null, price:String(p.price).replace('.',','), stock:String(p.stock), active:p.active, foto:p.foto||null, fotoFile:null } }); }
+  async saveProduct(){
+    const d = this.state.productDraft; if (!d) return;
+    if (!d.name.trim()){ this.showToast('Informe o nome do produto'); return; }
+    const price = parseFloat(String(d.price).replace(/\./g,'').replace(',','.')) || 0;
+    const stock = parseInt(String(d.stock).replace(/\D/g,''), 10) || 0;
+    const payload = { categoriaId:d.cat, subcategoriaId:d.subcat||null, nome:d.name.trim(), descricaoCurta:d.desc.trim(), descricaoCompleta:d.desc.trim(), preco:price, estoque:stock, ativo:d.active };
+    try {
+      let saved = d.id ? await this.apiSend('PUT', '/admin/produtos/' + d.id, payload) : await this.apiSend('POST', '/admin/produtos', payload);
+      if (d.fotoFile) {
+        const fd = new FormData(); fd.append('foto', d.fotoFile);
+        saved = (await this.apiUpload('/admin/produtos/' + saved.id + '/foto', fd)).produto;
+      }
+      this.setState(s => {
+        const mapped = this.mapProduto(saved);
+        const products = d.id ? s.products.map((x) => x.id === d.id ? mapped : x) : [...s.products, mapped];
+        return { products, productDraft:null };
+      });
+      this.showToast(d.id ? 'Produto atualizado' : 'Produto cadastrado');
+    } catch (e) { this.showToast(e.message || 'Erro ao salvar produto'); }
+  }
+  async deleteProduct(){
+    const d = this.state.productDraft; if (!d || !d.id) return;
+    try {
+      await this.apiDelete('/admin/produtos/' + d.id);
+      this.setState(s => ({ products: s.products.filter((x) => x.id !== d.id), productDraft:null }));
+      this.showToast('Produto excluído');
+    } catch (e) { this.showToast(e.message || 'Erro ao excluir produto'); }
+  }
+
+  // ---- banners (via API) ----
+  newBanner(){ this.setState({ bannerDraft:{ id:null, badge:'Promo', titulo:'', subtitulo:'', active:true, ctaLabel:'Pedir agora', ctaTipo:'CARDAPIO', produtoId:null, ordem:this.state.banners.length + 1, foto:null, fotoFile:null } }); }
+  editBanner(b){ this.setState({ bannerDraft:{ ...b, fotoFile:null } }); }
+  async toggleBanner(id){
+    const b = this.state.banners.find((x) => x.id === id); if (!b) return;
+    try {
+      const updated = await this.apiSend('PUT', '/admin/banners/' + id, { ativo: !b.active });
+      this.setState(s => ({ banners: s.banners.map((x) => x.id === id ? this.mapBanner(updated) : x) }));
+    } catch (e) { this.showToast('Erro ao atualizar banner'); }
+  }
+  async deleteBanner(id){
+    try {
+      await this.apiDelete('/admin/banners/' + id);
+      this.setState(s => ({ banners: s.banners.filter((x) => x.id !== id) }));
+      this.showToast('Banner removido');
+    } catch (e) { this.showToast('Erro ao remover banner'); }
+  }
+  async saveBanner(){
+    const d = this.state.bannerDraft; if (!d) return;
+    if (!d.titulo.trim()){ this.showToast('Informe o título do banner'); return; }
+    const payload = { selo:d.badge, titulo:d.titulo, descricao:d.subtitulo, ctaLabel:d.ctaLabel || 'Pedir agora', ctaTipo:d.ctaTipo || 'CARDAPIO', produtoId:d.produtoId || null, ordem:d.ordem || 0, ativo:d.active };
+    try {
+      let saved = d.id ? await this.apiSend('PUT', '/admin/banners/' + d.id, payload) : await this.apiSend('POST', '/admin/banners', payload);
+      // Se há um novo arquivo de foto selecionado, envia via multipart após salvar o banner
+      if (d.fotoFile) {
+        const fd = new FormData(); fd.append('foto', d.fotoFile);
+        saved = (await this.apiUpload('/admin/banners/' + saved.id + '/foto', fd)).banner;
+      }
+      this.setState(s => {
+        const mapped = this.mapBanner(saved);
+        const banners = d.id ? s.banners.map((x) => x.id === d.id ? mapped : x) : [...s.banners, mapped];
+        return { banners, bannerDraft:null };
+      });
+      this.showToast(d.id ? 'Banner atualizado' : 'Banner criado');
+    } catch (e) { this.showToast(e.message || 'Erro ao salvar banner'); }
+  }
+
+  // ---- tables (API real — id é a chave; num é só o rótulo/numero exibido) ----
+  mapMesa(m){
+    const statusMap = { LIVRE:'livre', OCUPADA:'ocupada', RESERVADA:'reservada', CONTA:'conta' };
+    const sinceMin = m.abertaEm ? Math.max(0, Math.floor((Date.now() - new Date(m.abertaEm).getTime()) / 60000)) : 0;
+    return {
+      id:m.id, num:m.numero, seats:m.lugares, status: statusMap[m.status] || 'livre',
+      cliente: m.clienteNome || '', sinceMin,
+      itens: (m.itens || []).map((it) => ({ itemId:it.id, produtoId:it.produtoId, n:it.nome, q:it.quantidade, p:it.precoUnitario }))
+    };
+  }
+  async carregarMesas(){
+    const mesas = await this.apiGet('/admin/mesas');
+    this.setState({ tables: mesas.map((m) => this.mapMesa(m)) });
+  }
+  async criarMesa(){
+    const numero = parseInt(this.state.novaMesaNumero, 10);
+    if (!numero) { this.showToast('Informe o número da mesa'); return; }
+    try {
+      const criada = await this.apiSend('POST', '/admin/mesas', { numero, lugares:4 });
+      this.setState(s => ({ tables:[...s.tables, this.mapMesa(criada)].sort((a,b) => a.num - b.num), novaMesaNumero:'' }));
+      this.showToast('Mesa ' + numero + ' criada');
+    } catch (e) { this.showToast(e.message || 'Erro ao criar mesa'); }
+  }
+  async setTableName(id, name){
+    try {
+      const atualizada = await this.apiSend('PUT', '/admin/mesas/' + id + '/nome', { clienteNome:name });
+      this.setState(s => ({ tables: s.tables.map((t) => t.id === id ? this.mapMesa(atualizada) : t) }));
+    } catch (e) { this.showToast(e.message || 'Erro ao salvar nome da mesa'); }
+  }
+  async setTableStatus(id, status){
+    const statusApi = { livre:'LIVRE', ocupada:'OCUPADA', reservada:'RESERVADA', conta:'CONTA' }[status];
+    try {
+      const atualizada = await this.apiSend('PUT', '/admin/mesas/' + id + '/status', { status:statusApi });
+      this.setState(s => ({ tables: s.tables.map((t) => t.id === id ? this.mapMesa(atualizada) : t), selectedTable: status === 'livre' ? null : s.selectedTable }));
+      if (status === 'livre') this.showToast('Mesa liberada');
+    } catch (e) { this.showToast(e.message || 'Erro ao atualizar mesa'); }
+  }
+  // Adiciona um produto à comanda da mesa (mesa precisa estar ocupada — ver mesaController.adicionarItem).
+  async addItemMesa(id, produtoId){
+    try {
+      const atualizada = await this.apiSend('POST', '/admin/mesas/' + id + '/itens', { produtoId });
+      this.setState(s => ({ tables: s.tables.map((t) => t.id === id ? this.mapMesa(atualizada) : t) }));
+    } catch (e) { this.showToast(e.message || 'Erro ao adicionar item'); }
+  }
+  // quantidade 0 remove a linha (ver mesaController.ajustarItem).
+  async ajustarItemMesa(id, itemId, quantidade){
+    try {
+      const atualizada = await this.apiSend('PUT', '/admin/mesas/' + id + '/itens/' + itemId, { quantidade });
+      this.setState(s => ({ tables: s.tables.map((t) => t.id === id ? this.mapMesa(atualizada) : t) }));
+    } catch (e) { this.showToast(e.message || 'Erro ao ajustar item'); }
+  }
+  // Confirma o pagamento da conta da mesa (forma: 'Dinheiro' | 'Pix' | 'Cartão'), conclui o pedido e libera a mesa.
+  async confirmarPagamento(id, forma){
+    const formaApi = { 'Dinheiro':'DINHEIRO', 'Pix':'PIX', 'Cartão':'CARTAO' }[forma];
+    try {
+      const atualizada = await this.apiSend('POST', '/admin/mesas/' + id + '/fechar', { formaPagamento:formaApi });
+      this.setState(s => ({ tables: s.tables.map((t) => t.id === id ? this.mapMesa(atualizada) : t), selectedTable:null }));
+      this.showToast('Pagamento em ' + forma + ' confirmado · mesa liberada');
+      this.carregarPedidos(); // o pedido da mesa agora aparece concluído na aba Pedidos
+    } catch (e) { this.showToast(e.message || 'Erro ao confirmar pagamento'); }
+  }
+
+  async savePwd(){
+    const { atual, nova, conf } = this.state.pwd;
+    if (!atual){ this.setState({ pwdMsg:'Digite sua senha atual.', pwdOk:false }); return; }
+    if (nova.length < 6){ this.setState({ pwdMsg:'A nova senha precisa de ao menos 6 caracteres.', pwdOk:false }); return; }
+    if (nova !== conf){ this.setState({ pwdMsg:'A confirmação não confere.', pwdOk:false }); return; }
+    try {
+      await this.apiSend('PUT', '/auth/senha', { senhaAtual:atual, novaSenha:nova });
+      this.setState({ pwd:{ atual:'', nova:'', conf:'' }, pwdMsg:'Senha alterada com sucesso!', pwdOk:true });
+      this.showToast('Senha atualizada');
+    } catch (e) {
+      this.setState({ pwdMsg: e.message || 'Erro ao trocar senha', pwdOk:false });
+    }
+  }
+
+  toggleStyle(on){ return { width:'46px', height:'26px', borderRadius:'14px', border:'none', cursor:'pointer', padding:'3px', display:'flex', justifyContent: on ? 'flex-end' : 'flex-start', background: on ? '#2D9E60' : '#D8CDBC', transition:'background .15s' }; }
+  knobStyle(){ return { width:'20px', height:'20px', borderRadius:'50%', background:'#fff', boxShadow:'0 1px 3px rgba(0,0,0,.2)', display:'block' }; }
+
+  componentWillUnmount(){ clearTimeout(this._toast); clearInterval(this._mesasPoll); }
+  componentDidUpdate(){ if (this.state.view !== this._lastView){ if (this._scroll) this._scroll.scrollTop = 0; this._lastView = this.state.view; } }
+
+  caixaVals(){
+    const c = this.state.caixa;
+    const pay = this.payBreakdown();
+    const recebido = (pay.Dinheiro||0) + (pay.Pix||0) + (pay['Cartão']||0);
+    const inicial = c.valorInicialNum || 0;
+    const emCaixa = inicial + (pay.Dinheiro||0);
+    const f = c.fechamento;
+    return {
+      caixaAberto: c.aberto, caixaFechado: !c.aberto,
+      caixaValorInicial: c.valorInicial,
+      onCaixaValor:(e) => this.setState(st => ({ caixa:{ ...st.caixa, valorInicial:e.target.value } })),
+      abrirCaixa:() => this.abrirCaixa(), fecharCaixa:() => this.fecharCaixa(),
+      taxaEntregaInput: this.state.taxaEntregaInput, onTaxaEntregaInput:(e) => this.onTaxaEntregaInput(e),
+      salvarTaxaEntrega:() => this.salvarTaxaEntrega(),
+      galetoHorarioInicioInput: this.state.galetoHorarioInicioInput, onGaletoHorarioInicioInput:(e) => this.onGaletoHorarioInicioInput(e),
+      galetoHorarioFimInput: this.state.galetoHorarioFimInput, onGaletoHorarioFimInput:(e) => this.onGaletoHorarioFimInput(e),
+      salvarGaletoHorarios:() => this.salvarGaletoHorarios(),
+      caixaAbertoEm: c.abertoEm || '—',
+      caixaInicialFmt: this.fmt(inicial),
+      caixaRecebidoFmt: this.fmt(recebido), caixaEmCaixaFmt: this.fmt(emCaixa),
+      caixaBreakdown:[
+        { label:'Dinheiro', value:this.fmt(pay.Dinheiro||0), color:'#2D9E60' },
+        { label:'Pix', value:this.fmt(pay.Pix||0), color:'#2563EB' },
+        { label:'Cartão', value:this.fmt(pay['Cartão']||0), color:'#D97706' },
+        { label:'Em aberto (mesas)', value:this.fmt(pay['Na mesa']||0), color:'#A8730B' }
+      ],
+      hasFechamento: !!f,
+      fechamentoHora: f ? f.hora : '', fechamentoRecebido: f ? this.fmt(f.recebido) : '', fechamentoEmCaixa: f ? this.fmt(f.emCaixa) : ''
+    };
+  }
+
+  vendasVals(){
+    const s = this.state;
+    const soldMap = {};
+    s.orders.filter(o => o.status !== 'cancelado').forEach(o => o.itens.forEach(it => {
+      if (!soldMap[it.n]) soldMap[it.n] = { qty:0, rev:0 };
+      soldMap[it.n].qty += it.q; soldMap[it.n].rev += it.p * it.q;
+    }));
+    const soldRows = Object.keys(soldMap).map(n => ({ name:n, qty:String(soldMap[n].qty), revFmt:this.fmt(soldMap[n].rev), _q:soldMap[n].qty }))
+      .sort((a,b) => b._q - a._q);
+    const totalItens = Object.values(soldMap).reduce((a,x) => a + x.qty, 0);
+    const totalReceita = Object.values(soldMap).reduce((a,x) => a + x.rev, 0);
+    const lowCount = s.products.filter(p => p.stock <= 5).length;
+
+    const estoqueRows = s.products.slice().sort((a,b) => a.stock - b.stock).map(p => {
+      const zero = p.stock === 0, low = p.stock > 0 && p.stock <= 5;
+      const meta = zero ? { l:'Esgotado', fg:'#C0392B', bg:'#FBEAE8', bd:'#F0CFCB' } : low ? { l:'Baixo', fg:'#A8730B', bg:'#FBF0CF', bd:'#E8C766' } : { l:'OK', fg:'#2D9E60', bg:'#E6F4EC', bd:'#AEDCC2' };
+      return { name:p.name, cat:this.catLabel(p.cat), stock:String(p.stock),
+        stockColor:'color:' + (zero ? '#C0392B' : low ? '#A8730B' : '#1D1009') + ';font-weight:500;',
+        statusLabel:meta.l, badgeStyle:{ display:'inline-block', padding:'3px 9px', borderRadius:'8px', fontSize:'11px', fontWeight:700, color:meta.fg, background:meta.bg, border:'1px solid '+meta.bd } };
+    });
+
+    return {
+      soldRows, estoqueRows,
+      vendasKpis:[
+        { label:'Itens vendidos', value:String(totalItens), color:'#D97706', dotStyle:{ width:'9px', height:'9px', borderRadius:'3px', background:'#D97706', display:'inline-block' } },
+        { label:'Faturamento', value:this.fmt(totalReceita), color:'#2D9E60', dotStyle:{ width:'9px', height:'9px', borderRadius:'3px', background:'#2D9E60', display:'inline-block' } },
+        { label:'Produtos', value:String(s.products.length), color:'#6B2E12', dotStyle:{ width:'9px', height:'9px', borderRadius:'3px', background:'#6B2E12', display:'inline-block' } },
+        { label:'Estoque baixo', value:String(lowCount), color:'#C0392B', dotStyle:{ width:'9px', height:'9px', borderRadius:'3px', background:'#C0392B', display:'inline-block' } }
+      ]
+    };
+  }
+
+  renderVals(){
+    const s = this.state;
+
+    const navStyle = (on) => ({ display:'flex', alignItems:'center', gap:'12px', width:'100%', border:'none', cursor:'pointer', borderRadius:'12px', padding:'12px 14px', fontWeight:700, fontSize:'14.5px', textAlign:'left',
+      background: on ? '#D97706' : 'transparent', color: on ? '#fff' : '#C9B79D', boxShadow: on ? '0 6px 16px rgba(217,119,6,.3)' : 'none' });
+
+    const titles = {
+      pedidos:['Pedidos','Acompanhe e gerencie os pedidos em tempo real'],
+      produtos:['Produtos','Cadastre, edite preços e controle o estoque'],
+      categorias:['Categorias','Foto de cada categoria exibida no app do cliente'],
+      marmitas:['Monte sua Marmita','Proteínas, complementos e preço por tamanho'],
+      banners:['Banners & Cards','Gerencie os destaques da Home do app'],
+      mesas:['Mesas','Controle o salão e o consumo das mesas'],
+      caixa:['Caixa','Abra e feche o caixa do dia'],
+      entregadores:['Entregadores','Cadastre e gerencie os entregadores do delivery'],
+      garcons:['Garçons','Cadastre e gerencie os garçons do salão'],
+      vendas:['Vendas & Estoque','Quanto foi vendido e o que resta em estoque'],
+      senha:['Trocar senha','Atualize suas credenciais de acesso']
+    };
+    const [pageTitle, pageSubtitle] = titles[s.view] || ['',''];
+
+    const novosCount = s.orders.filter(o => o.status === 'novo').length;
+
+    // ---- KPIs ----
+    const active = s.orders.filter(o => o.status !== 'cancelado');
+    const faturamento = active.reduce((a, o) => a + this.orderTotals(o).total, 0);
+    const emAberto = s.orders.filter(o => o.status !== 'concluido' && o.status !== 'cancelado').length;
+    const ticket = active.length ? faturamento / active.length : 0;
+    const kpis = [
+      { label:'Pedidos hoje', value:String(s.orders.length), color:'#D97706' },
+      { label:'Em aberto', value:String(emAberto), color:'#2563EB' },
+      { label:'Faturamento', value:this.fmt(faturamento), color:'#2D9E60' },
+      { label:'Ticket médio', value:this.fmt(ticket), color:'#6B2E12' }
+    ].map(k => ({ ...k, dotStyle:{ width:'9px', height:'9px', borderRadius:'3px', background:k.color, display:'inline-block' } }));
+
+    // ---- order tabs ----
+    const filterDefs = [
+      { id:'todos', label:'Todos' }, { id:'novo', label:'Novos' }, { id:'preparo', label:'Em preparo' },
+      { id:'rota', label:'Em rota' }, { id:'concluido', label:'Concluídos' }, { id:'cancelado', label:'Cancelados' }
+    ];
+    const orderTabs = filterDefs.map(f => {
+      const on = s.orderFilter === f.id;
+      const cnt = f.id === 'todos' ? s.orders.length : s.orders.filter(o => o.status === f.id).length;
+      return { label:f.label, onClick:() => this.setState({ orderFilter:f.id }),
+        showCount: cnt > 0, count:String(cnt),
+        style:{ display:'inline-flex', alignItems:'center', gap:'7px', border:'1px solid', cursor:'pointer', borderRadius:'11px', padding:'9px 15px', fontWeight:700, fontSize:'13px',
+          background: on ? '#6B2E12' : '#FFFBF3', color: on ? '#FFF3DC' : '#6B2E12', borderColor: on ? '#6B2E12' : 'rgba(29,16,9,.1)' },
+        countStyle:{ minWidth:'18px', height:'18px', padding:'0 5px', borderRadius:'9px', fontSize:'10px', fontWeight:700, display:'flex', alignItems:'center', justifyContent:'center',
+          background: on ? 'rgba(255,243,220,.2)' : '#F6F1E7', color: on ? '#FFF3DC' : '#8C8075' } };
+    });
+
+    // ---- order rows ----
+    let filteredOrders = s.orderFilter === 'todos' ? s.orders : s.orders.filter(o => o.status === s.orderFilter);
+    const oq = s.search.trim().toLowerCase();
+    if (s.view === 'pedidos' && oq) filteredOrders = filteredOrders.filter(o => (o.cliente + ' ' + o.id + ' ' + o.itens.map(i=>i.n).join(' ')).toLowerCase().includes(oq));
+    const tipoIcons = { Entrega:'🛵', Mesa:'🍽', Retirada:'🛍' };
+    const orderRows = filteredOrders.map(o => {
+      const T = this.orderTotals(o);
+      const b = this.badge(o.status, o.tipo);
+      const canAdvance = o.status !== 'concluido' && o.status !== 'cancelado';
+      const resumo = o.itens.map(i => i.q + '× ' + i.n).join(', ');
+      const tipoColor = o.tipo === 'Entrega' ? '#2563EB' : o.tipo === 'Mesa' ? '#D97706' : '#2D9E60';
+      return {
+        id:o.id, hora:o.hora, cliente:o.cliente, itensResumo:resumo, tipo:o.tipo,
+        tipoIcon: o.tipo === 'Entrega' ? '◆' : o.tipo === 'Mesa' ? '■' : '▲',
+        tipoIconStyle:{ color:tipoColor, fontSize:'10px' },
+        totalFmt:this.fmt(T.total), badgeStyle:b.style, statusLabel:b.label,
+        canAdvance, advanceLabel:this.advanceLabel(o.status, o.tipo),
+        isDone: o.status === 'concluido' || o.status === 'cancelado',
+        doneLabel: o.status === 'cancelado' ? 'Cancelado' : 'Concluído',
+        rowBg: o.status === 'cancelado' ? 'opacity:.6;' : '',
+        showEntregadorSelect: o.status === 'rota',
+        entregadorSelecionado: String(o.entregadorId || ''),
+        entregadorOptions: s.entregadores.filter(e => e.ativo).map(e => ({
+          value: String(e.id), label: e.nome, selected: String(o.entregadorId) === String(e.id)
+        })),
+        onOpen:() => this.setState({ selectedOrder:o.id }),
+        onAdvance:(e) => { if (e&&e.stopPropagation) e.stopPropagation(); this.advanceOrder(o.id); },
+        onAtribuirEntregador:(ev) => this.atribuirEntregador(o.rawId, ev.target.value ? parseInt(ev.target.value, 10) : null)
+      };
+    });
+
+    // ---- order drawer detail ----
+    const selO = s.orders.find(o => o.id === s.selectedOrder);
+    let od = {};
+    if (selO){
+      const T = this.orderTotals(selO);
+      const b = this.badge(selO.status, selO.tipo);
+      const stepDefs = selO.tipo === 'Entrega'
+        ? ['Recebido','Em preparo','Saiu p/ entrega','Entregue']
+        : selO.tipo === 'Mesa' ? ['Recebido','Em preparo','Servindo','Finalizado']
+        : ['Recebido','Em preparo','Pronto','Retirado'];
+      const curIdx = selO.status === 'cancelado' ? -1 : this.pipeline.indexOf(selO.status);
+      const steps = stepDefs.map((lab, i) => {
+        const done = i <= curIdx, last = i === stepDefs.length - 1;
+        return { label:lab, done, line:!last,
+          dotStyle:{ width:'26px', height:'26px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', flex:'none', background: done ? '#2D9E60' : '#E5D9C5' },
+          lineStyle:{ width:'3px', flex:1, minHeight:'18px', background: done && i < curIdx ? '#2D9E60' : '#E5D9C5', borderRadius:'2px' },
+          labelStyle:{ fontWeight:700, fontSize:'14px', color: done ? '#1D1009' : '#9C9183' } };
+      });
+      od = {
+        id:selO.id, hora:selO.hora, tipo:selO.tipo, cliente:selO.cliente, initial:(selO.cliente||'?').replace(/^(Mesa|Retirada).*/,'$1')[0] || selO.cliente[0],
+        localInfo: selO.tipo === 'Mesa' ? ('Mesa '+selO.mesa+' · salão') : selO.tipo === 'Retirada' ? 'Retirada no balcão' : selO.endereco,
+        badgeStyle:b.style, statusLabel:b.label,
+        itens: selO.itens.map(it => ({ n:it.n, q:it.q, lineFmt:this.fmt(it.p*it.q) })),
+        subFmt:this.fmt(T.sub), feeFmt: T.fee === 0 ? 'Grátis' : this.fmt(T.fee), totalFmt:this.fmt(T.total), pgto:selO.pgto,
+        steps,
+        canAdvance: selO.status !== 'concluido' && selO.status !== 'cancelado',
+        canCancel: selO.status !== 'concluido' && selO.status !== 'cancelado',
+        advanceLabel:this.advanceLabel(selO.status, selO.tipo),
+        isDone: selO.status === 'concluido' || selO.status === 'cancelado',
+        doneLabel: selO.status === 'cancelado' ? 'Pedido cancelado' : 'Pedido concluído',
+        onAdvance:() => this.advanceOrder(selO.id),
+        onCancel:() => this.cancelOrder(selO.id)
+      };
+    }
+
+    // ---- product cat tabs ----
+    const catTabs = [{ id:'todos', label:'Todos' }].concat(s.categorias.map(c => ({ id:c.id, label:c.nome }))).map(c => {
+      const on = s.prodCat === c.id;
+      return { label:c.label, onClick:() => this.setState({ prodCat:c.id }),
+        style:{ border:'1px solid', cursor:'pointer', borderRadius:'11px', padding:'8px 14px', fontWeight:700, fontSize:'13px',
+          background: on ? '#FFF3DC' : '#FFFBF3', color: on ? '#B45309' : '#8C8075', borderColor: on ? '#F2C078' : 'rgba(29,16,9,.08)' } };
+    });
+
+    // ---- categorias (foto exibida na Home/cardápio do cliente) ----
+    const categoriaCards = s.categorias.map(c => {
+      const fotoSrc = c.foto ? this.apiBase.replace('/api', '') + '/uploads/' + c.foto : '';
+      return {
+        nome: c.nome, hasFoto: !!c.foto, semFoto: !c.foto, fotoSrc,
+        onTrocarFoto:() => this.triggerTrocarFotoCategoria(c.id),
+        onRemoverFoto:() => this.removerFotoCategoria(c.id)
+      };
+    });
+
+    // ---- product rows ----
+    let prods = s.prodCat === 'todos' ? s.products : s.products.filter(p => p.cat === s.prodCat);
+    const pq = s.search.trim().toLowerCase();
+    if (s.view === 'produtos' && pq) prods = prods.filter(p => (p.name + ' ' + p.desc).toLowerCase().includes(pq));
+    const productRows = prods.map(p => {
+      const low = p.stock <= 5;
+      return { name:p.name, desc:p.desc, catLabel:this.catLabel(p.cat), priceFmt:this.fmt(p.price), stock:String(p.stock),
+        hasFoto: !!p.foto, semFoto: !p.foto, fotoSrc: p.foto || '',
+        stockStyle:{ fontFamily:"'DM Mono',monospace", fontWeight:500, minWidth:'34px', textAlign:'center', fontSize:'14px', color: p.stock === 0 ? '#C0392B' : low ? '#A8730B' : '#1D1009' },
+        toggleStyle:this.toggleStyle(p.active), knobStyle:this.knobStyle(),
+        onEdit:(e) => { if (e&&e.stopPropagation) e.stopPropagation(); this.editProduct(p); },
+        onInc:(e) => { if (e&&e.stopPropagation) e.stopPropagation(); this.adjustStock(p.id, 1); },
+        onDec:(e) => { if (e&&e.stopPropagation) e.stopPropagation(); this.adjustStock(p.id, -1); },
+        onToggle:(e) => { if (e&&e.stopPropagation) e.stopPropagation(); this.toggleProduct(p.id); } };
+    });
+
+    // ---- "monte sua marmita": linhas de proteínas/complementos + preço por tamanho ----
+    const marmitaRow = (tipo) => (it) => ({
+      nome:it.nome, esgotado:it.esgotado, esgotadoLabel: it.esgotado ? 'Disponível' : 'Esgotado',
+      toggleStyle:this.toggleStyle(it.ativo), knobStyle:this.knobStyle(),
+      onToggleAtivo:() => this.toggleMarmitaAtivo(tipo, it.id),
+      onToggleEsgotado:() => this.toggleMarmitaEsgotado(tipo, it.id),
+      onExcluir:() => this.excluirMarmitaItem(tipo, it.id)
+    });
+    const proteinaRows = s.proteinas.map(marmitaRow('proteinas'));
+    const complementoRows = s.complementos.map(marmitaRow('complementos'));
+    const marmitaSizeInputs = ['pequena','grande'].map(id => {
+      const sz = s.marmitaSizes[id];
+      return { id, nome:sz.nome, proteinasLabel: sz.proteinas + (sz.proteinas===1?' proteína':' proteínas') + ' + complementos à vontade',
+        price:String(sz.price), onPrice:this.onMarmitaSizePreco(id) };
+    });
+    const mDraft = s.marmitaDraft;
+
+    // ---- product draft ----
+    const d = s.productDraft;
+    const draftCatOptions = s.categorias.map(c => {
+      const on = d && d.cat === c.id;
+      // Troca de categoria invalida a subcategoria escolhida (ela pertence à categoria anterior).
+      return { label:c.nome, onClick:() => this.setState(st => ({ productDraft:{ ...st.productDraft, cat:c.id, subcat:null } })),
+        style:{ border:'1px solid', cursor:'pointer', borderRadius:'10px', padding:'8px 13px', fontWeight:700, fontSize:'13px',
+          background: on ? '#6B2E12' : '#fff', color: on ? '#FFF3DC' : '#6B2E12', borderColor: on ? '#6B2E12' : 'rgba(29,16,9,.12)' } };
+    });
+    const subcatsDaCategoria = d ? s.subcategorias.filter((sc) => sc.categoriaId === d.cat) : [];
+    const draftSubcatOptions = subcatsDaCategoria.map((sc) => {
+      const on = d && d.subcat === sc.id;
+      return { label:sc.nome, onClick:() => this.setState(st => ({ productDraft:{ ...st.productDraft, subcat:sc.id } })),
+        style:{ border:'1px solid', cursor:'pointer', borderRadius:'10px', padding:'8px 13px', fontWeight:700, fontSize:'13px',
+          background: on ? '#D97706' : '#fff', color: on ? '#fff' : '#6B2E12', borderColor: on ? '#D97706' : 'rgba(29,16,9,.12)' } };
+    });
+
+    // ---- banner rows ----
+    const bannerRows = s.banners.map((b, i) => ({
+      badge:b.badge, titulo:b.titulo, subtitulo:b.subtitulo, pos:String(i+1),
+      hasFoto: !!b.foto, fotoSrc: b.foto || '',
+      previewStyle:{ width:'230px', flex:'none', display:'flex', alignItems:'center', gap:'10px', borderRadius:'15px', padding:'14px', background:'linear-gradient(120deg,#1D1009 0%,#6B2E12 60%,#B45309 130%)', opacity: b.active ? 1 : .5 },
+      statusBadge:{ display:'inline-flex', alignItems:'center', padding:'4px 10px', borderRadius:'8px', fontSize:'11px', fontWeight:700, color: b.active ? '#2D9E60' : '#8C8075', background: b.active ? '#E6F4EC' : '#F6F1E7', border:'1px solid '+(b.active ? '#AEDCC2' : '#E0D6C6') },
+      statusLabel: b.active ? 'Ativo' : 'Inativo',
+      toggleStyle:this.toggleStyle(b.active), knobStyle:this.knobStyle(),
+      onToggle:() => this.toggleBanner(b.id), onEdit:() => this.editBanner(b), onDelete:() => this.deleteBanner(b.id)
+    }));
+
+    // ---- banner draft ----
+    const bd = s.bannerDraft;
+
+    // ---- mesas ----
+    const mesaMeta = { livre:{ label:'Livre', color:'#2D9E60' }, ocupada:{ label:'Ocupada', color:'#D97706' }, reservada:{ label:'Reservada', color:'#2563EB' }, conta:{ label:'Aguardando conta', color:'#A8730B' } };
+    const mesaLegend = ['livre','ocupada','reservada','conta'].map(k => ({ label:mesaMeta[k].label, color:mesaMeta[k].color, count:String(s.tables.filter(t => t.status === k).length) }));
+    const mesaCards = s.tables.map(t => {
+      const m = mesaMeta[t.status];
+      const occ = t.status !== 'livre';
+      const tot = (t.itens||[]).reduce((a,x)=>a+x.p*x.q,0);
+      const bgMap = { livre:'#FFFBF3', ocupada:'#FFF6E6', reservada:'#EEF3FD', conta:'#FCF6E4' };
+      return { num:String(t.num), seats:String(t.seats),
+        nome: t.cliente || '', hasNome: !!(t.cliente && t.cliente.length),
+        cardStyle:{ display:'flex', flexDirection:'column', alignItems:'flex-start', minHeight:'132px', cursor:'pointer', textAlign:'left', borderRadius:'16px', padding:'15px', border:'1px solid '+(occ?m.color+'44':'rgba(29,16,9,.08)'), background:bgMap[t.status], boxShadow:'0 4px 12px rgba(29,16,9,.04)' },
+        ink:'#1D1009', muted:'#8C8075',
+        dotStyle:{ width:'11px', height:'11px', borderRadius:'50%', background:m.color, boxShadow:'0 0 0 4px '+m.color+'22' },
+        statusPill:{ display:'inline-block', padding:'4px 10px', borderRadius:'8px', fontSize:'11.5px', fontWeight:700, color:m.color, background:'#fff', border:'1px solid '+m.color+'55' },
+        statusLabel:m.label,
+        hasOrder: occ && (t.itens||[]).length > 0,
+        since: t.status === 'reservada' ? 'reserva' : (t.sinceMin||0) + ' min',
+        totalFmt:this.fmt(tot),
+        onOpen:() => this.setState({ selectedTable:t.id }) };
+    });
+
+    // ---- mesa drawer ----
+    const selT = s.tables.find(t => t.id === s.selectedTable);
+    let md = {};
+    if (selT){
+      const m = mesaMeta[selT.status];
+      const tot = (selT.itens||[]).reduce((a,x)=>a+x.p*x.q,0);
+      const canEditItens = selT.status === 'ocupada';
+      const actions = [];
+      const btn = (label, bg, fg, fn, bd) => ({ label, onClick:fn, style:{ width:'100%', border: bd?('1px solid '+bd):'none', cursor:'pointer', borderRadius:'13px', padding:'13px', fontWeight:700, fontSize:'15px', background:bg, color:fg } });
+      if (selT.status === 'livre'){
+        actions.push(btn('Abrir mesa (ocupar)', '#D97706', '#fff', () => this.setTableStatus(selT.id, 'ocupada')));
+        actions.push(btn('Marcar reserva', '#fff', '#2563EB', () => this.setTableStatus(selT.id, 'reservada'), '#BBCDF6'));
+      } else if (selT.status === 'reservada'){
+        actions.push(btn('Confirmar chegada', '#D97706', '#fff', () => this.setTableStatus(selT.id, 'ocupada')));
+        actions.push(btn('Cancelar reserva', '#fff', '#C0392B', () => this.setTableStatus(selT.id, 'livre'), '#F0CFCB'));
+      } else if (selT.status === 'ocupada'){
+        actions.push(btn('Fechar conta', '#A8730B', '#fff', () => this.setTableStatus(selT.id, 'conta')));
+        actions.push(btn('Liberar mesa', '#fff', '#2D9E60', () => this.setTableStatus(selT.id, 'livre'), '#AEDCC2'));
+      } else if (selT.status === 'conta'){
+        // Em vez de um único botão genérico, a conta só fecha ao escolher a forma de pagamento usada pelo cliente.
+        actions.push(btn('Dinheiro', '#2D9E60', '#fff', () => this.confirmarPagamento(selT.id, 'Dinheiro')));
+        actions.push(btn('Pix', '#2563EB', '#fff', () => this.confirmarPagamento(selT.id, 'Pix')));
+        actions.push(btn('Cartão', '#D97706', '#fff', () => this.confirmarPagamento(selT.id, 'Cartão')));
+      }
+      md = { num:String(selT.num), seats:String(selT.seats),
+        nome: selT.cliente || '', onNome:(e) => this.setTableName(selT.id, e.target.value),
+        statusLabel:m.label, badgeStyle:{ display:'inline-flex', alignItems:'center', padding:'5px 11px', borderRadius:'9px', fontSize:'12px', fontWeight:700, color:m.color, background:'#fff', border:'1px solid '+m.color+'55' },
+        sinceText: selT.status === 'livre' || selT.status === 'reservada' ? '—' : (selT.sinceMin||0)+' min',
+        hasOrder:(selT.itens||[]).length > 0,
+        isFree: selT.status === 'livre' || selT.status === 'reservada',
+        isConta: selT.status === 'conta',
+        canEditItens,
+        itens:(selT.itens||[]).map(it => ({
+          n:it.n, q:it.q, lineFmt:this.fmt(it.p*it.q),
+          onDec:() => this.ajustarItemMesa(selT.id, it.itemId, it.q - 1)
+        })),
+        produtosDisponiveis: canEditItens ? s.products.filter(p => p.active).map(p => ({
+          name:p.name, priceFmt:this.fmt(p.price), onAdd:() => this.addItemMesa(selT.id, p.id)
+        })) : [],
+        totalFmt:this.fmt(tot), actions };
+    }
+
+    const inputStyle = { width:'100%', border:'1px solid rgba(29,16,9,.14)', background:'#fff', borderRadius:'12px', padding:'12px 13px', fontSize:'14px', color:'#1D1009', outline:'none' };
+    const textareaStyle = { ...inputStyle, lineHeight:'1.4' };
+
+    const adminNome = s.admin ? (s.admin.nome || s.admin.email) : '';
+
+    return {
+      noop:() => {}, setScroll:(el) => { this._scroll = el; },
+
+      // ---- sessão / login ----
+      carregandoSessao: !s.authChecked,
+      mostrarLogin: s.authChecked && !s.admin,
+      isLogado: s.authChecked && !!s.admin,
+      loginEmail:s.loginForm.email, onLoginEmail:(e) => this.onLoginEmail(e),
+      loginSenha:s.loginForm.senha, onLoginSenha:(e) => this.onLoginSenha(e),
+      hasLoginErro: !!s.loginErro, loginErro:s.loginErro,
+      loginBtnLabel: s.loggingIn ? 'Entrando...' : 'Entrar',
+      fazerLogin:() => this.fazerLogin(), logout:() => this.logout(),
+      inputStyleLogin:{ width:'100%', border:'1px solid rgba(29,16,9,.14)', background:'#fff', borderRadius:'12px', padding:'13px 14px', fontSize:'14.5px', color:'#1D1009', outline:'none' },
+      adminNome, adminEmail: s.admin ? s.admin.email : '',
+      adminInicial: adminNome ? adminNome[0].toUpperCase() : 'A',
+      goPedidos:() => this.nav('pedidos'), goProdutos:() => this.nav('produtos'), goCategorias:() => this.nav('categorias'), goMarmitas:() => this.nav('marmitas'),
+      goBanners:() => this.nav('banners'), goMesas:() => this.nav('mesas'), goSenha:() => this.nav('senha'),
+      goCaixa:() => this.nav('caixa'), goVendas:() => this.nav('vendas'), goEntregadores:() => this.nav('entregadores'),
+      goGarcons:() => this.nav('garcons'),
+      navPedidos:navStyle(s.view==='pedidos'), navProdutos:navStyle(s.view==='produtos'), navCategorias:navStyle(s.view==='categorias'), navMarmitas:navStyle(s.view==='marmitas'), navBanners:navStyle(s.view==='banners'), navMesas:navStyle(s.view==='mesas'), navSenha:navStyle(s.view==='senha'),
+      navCaixa:navStyle(s.view==='caixa'), navVendas:navStyle(s.view==='vendas'), navEntregadores:navStyle(s.view==='entregadores'),
+      navGarcons:navStyle(s.view==='garcons'),
+      hasNovos: novosCount > 0, novosCount:String(novosCount),
+
+      pageTitle, pageSubtitle,
+      showSearch: s.view === 'pedidos' || s.view === 'produtos',
+      searchPlaceholder: s.view === 'produtos' ? 'Buscar produto...' : 'Buscar pedido ou cliente...',
+      search:s.search, onSearch:(e) => this.setState({ search:e.target.value }),
+      todayDate:'21 jun 2026, Sáb', openLabel:'Aberto agora',
+
+      isPedidos: s.view==='pedidos', isProdutos: s.view==='produtos', isCategorias: s.view==='categorias', isMarmitas: s.view==='marmitas', isBanners: s.view==='banners', isMesas: s.view==='mesas', isSenha: s.view==='senha',
+      isCaixa: s.view==='caixa', isVendas: s.view==='vendas', isEntregadores: s.view==='entregadores', isGarcons: s.view==='garcons',
+
+      novoEntregador:() => this.novoEntregador(),
+      isEntregadorDraft: !!s.entregadorDraft,
+      entregadorDraftNome: s.entregadorDraft?.nome || '',
+      entregadorDraftEmail: s.entregadorDraft?.email || '',
+      entregadorDraftSenha: s.entregadorDraft?.senha || '',
+      entregadorSenhaPlaceholder: s.entregadorDraft?.id ? 'Nova senha (deixe em branco pra manter)' : 'Senha (mín. 6 caracteres)',
+      onEntregadorDraftNome:(e) => this.onEntregadorDraftNome(e),
+      onEntregadorDraftEmail:(e) => this.onEntregadorDraftEmail(e),
+      onEntregadorDraftSenha:(e) => this.onEntregadorDraftSenha(e),
+      salvarEntregadorDraft:() => this.salvarEntregadorDraft(),
+      cancelarEntregadorDraft:() => this.cancelarEntregadorDraft(),
+      entregadoresEmpty: s.entregadores.length === 0,
+      entregadorRows: s.entregadores.map(e => ({
+        nome: e.nome,
+        email: e.email,
+        toggleStyle: this.toggleStyle(e.ativo),
+        knobStyle: this.knobStyle(),
+        onToggle:() => this.toggleEntregadorAtivo(e.id),
+        onEdit:() => this.editEntregador(e)
+      })),
+
+      novoGarcom:() => this.novoGarcom(),
+      isGarcomDraft: !!s.garcomDraft,
+      garcomDraftNome: s.garcomDraft?.nome || '',
+      garcomDraftEmail: s.garcomDraft?.email || '',
+      garcomDraftSenha: s.garcomDraft?.senha || '',
+      garcomSenhaPlaceholder: s.garcomDraft?.id ? 'Nova senha (deixe em branco pra manter)' : 'Senha (mín. 6 caracteres)',
+      onGarcomDraftNome:(e) => this.onGarcomDraftNome(e),
+      onGarcomDraftEmail:(e) => this.onGarcomDraftEmail(e),
+      onGarcomDraftSenha:(e) => this.onGarcomDraftSenha(e),
+      salvarGarcomDraft:() => this.salvarGarcomDraft(),
+      cancelarGarcomDraft:() => this.cancelarGarcomDraft(),
+      garconsEmpty: s.garcons.length === 0,
+      garcomRows: s.garcons.map(g => ({
+        nome: g.nome,
+        email: g.email,
+        toggleStyle: this.toggleStyle(g.ativo),
+        knobStyle: this.knobStyle(),
+        onToggle:() => this.toggleGarcomAtivo(g.id),
+        onEdit:() => this.editGarcom(g)
+      })),
+      ...this.caixaVals(), ...this.vendasVals(),
+
+      kpis, orderTabs, orderRows, ordersEmpty: orderRows.length === 0,
+
+      orderOpen: !!selO, closeOrder:() => this.setState({ selectedOrder:null }), od,
+
+      catTabs, productRows, productsEmpty: productRows.length === 0,
+      newProduct:() => this.newProduct(),
+
+      categoriaCards,
+      setCategoriaFotoInput:(el) => this.setCategoriaFotoInput(el),
+      onCategoriaFotoSelected:(e) => this.onCategoriaFotoSelected(e),
+
+      proteinaRows, complementoRows, marmitaSizeInputs,
+      novaProteina:() => this.novoMarmitaItem('proteinas'), novoComplementoBtn:() => this.novoMarmitaItem('complementos'),
+      isProteinaDraft: !!(mDraft && mDraft.tipo === 'proteinas'), isComplementoDraft: !!(mDraft && mDraft.tipo === 'complementos'),
+      marmitaDraftNome: mDraft ? mDraft.nome : '', onMarmitaDraftNome:(e) => this.onMarmitaDraftNome(e),
+      salvarMarmitaDraft:() => this.salvarMarmitaDraft(), cancelarMarmitaDraft:() => this.cancelarMarmitaDraft(),
+      salvarMarmitaSizes:() => this.salvarMarmitaSizes(),
+
+      productOpen: !!d, closeProduct:() => this.setState({ productDraft:null }),
+      productDrawerTitle: d && d.id ? 'Editar produto' : 'Novo produto',
+      draftIsEdit: !!(d && d.id),
+      draftName: d ? d.name : '', draftDesc: d ? d.desc : '', draftPrice: d ? d.price : '', draftStock: d ? d.stock : '',
+      draftHasFoto: !!(d && d.foto), draftSemFoto: !(d && d.foto), draftFotoSrc: (d && d.foto) || '',
+      setFotoInput:(el) => this.setFotoInput(el), triggerFotoUpload:() => this.triggerFotoUpload(),
+      onFotoSelected:(e) => this.onFotoSelected(e), removerFoto:() => this.removerFoto(),
+      onDraftName:(e) => this.setState(st => ({ productDraft:{ ...st.productDraft, name:e.target.value } })),
+      onDraftDesc:(e) => this.setState(st => ({ productDraft:{ ...st.productDraft, desc:e.target.value } })),
+      onDraftPrice:(e) => this.setState(st => ({ productDraft:{ ...st.productDraft, price:e.target.value } })),
+      onDraftStock:(e) => this.setState(st => ({ productDraft:{ ...st.productDraft, stock:e.target.value } })),
+      draftCatOptions, draftSubcatOptions, hasDraftSubcatOptions: draftSubcatOptions.length > 0,
+      draftToggleStyle:this.toggleStyle(d ? d.active : true), draftKnobStyle:this.knobStyle(),
+      toggleDraftActive:() => this.setState(st => ({ productDraft:{ ...st.productDraft, active:!st.productDraft.active } })),
+      saveProduct:() => this.saveProduct(), deleteProduct:() => this.deleteProduct(),
+
+      bannerRows, newBanner:() => this.newBanner(),
+      bannerOpen: !!bd, closeBanner:() => this.setState({ bannerDraft:null }),
+      bannerDrawerTitle: bd && bd.id ? 'Editar banner' : 'Novo banner',
+      bDraftBadge: bd ? bd.badge : '', bDraftTitulo: bd ? bd.titulo : '', bDraftSub: bd ? bd.subtitulo : '',
+      bDraftBadgeP: bd && bd.badge ? bd.badge : 'Selo', bDraftTituloP: bd && bd.titulo ? bd.titulo : 'Título do banner', bDraftSubP: bd && bd.subtitulo ? bd.subtitulo : 'Subtítulo aparece aqui',
+      bDraftPreview:{ display:'flex', alignItems:'center', gap:'12px', borderRadius:'18px', padding:'18px', background:'linear-gradient(120deg,#1D1009 0%,#6B2E12 60%,#B45309 130%)' },
+      bDraftHasFoto: !!(bd && bd.foto), bDraftSemFoto: !(bd && bd.foto), bDraftFotoSrc: (bd && bd.foto) || '',
+      setBannerFotoInput:(el) => this.setBannerFotoInput(el), triggerBannerFotoUpload:() => this.triggerBannerFotoUpload(),
+      onBannerFotoSelected:(e) => this.onBannerFotoSelected(e), removerBannerFoto:() => this.removerBannerFoto(),
+      onBBadge:(e) => this.setState(st => ({ bannerDraft:{ ...st.bannerDraft, badge:e.target.value } })),
+      onBTitulo:(e) => this.setState(st => ({ bannerDraft:{ ...st.bannerDraft, titulo:e.target.value } })),
+      onBSub:(e) => this.setState(st => ({ bannerDraft:{ ...st.bannerDraft, subtitulo:e.target.value } })),
+      bDraftToggleStyle:this.toggleStyle(bd ? bd.active : true), bDraftKnobStyle:this.knobStyle(),
+      toggleBDraftActive:() => this.setState(st => ({ bannerDraft:{ ...st.bannerDraft, active:!st.bannerDraft.active } })),
+      saveBanner:() => this.saveBanner(),
+
+      mesaLegend, mesaCards,
+      novaMesaNumero:s.novaMesaNumero, onNovaMesaNumero:(e) => this.setState({ novaMesaNumero:e.target.value }), criarMesa:() => this.criarMesa(),
+      mesaOpen: !!selT, closeMesa:() => this.setState({ selectedTable:null }), md,
+
+      pwdAtual:s.pwd.atual, pwdNova:s.pwd.nova, pwdConf:s.pwd.conf,
+      onPwdAtual:(e) => this.setState(st => ({ pwd:{ ...st.pwd, atual:e.target.value }, pwdMsg:'' })),
+      onPwdNova:(e) => this.setState(st => ({ pwd:{ ...st.pwd, nova:e.target.value }, pwdMsg:'' })),
+      onPwdConf:(e) => this.setState(st => ({ pwd:{ ...st.pwd, conf:e.target.value }, pwdMsg:'' })),
+      pwdMsg:s.pwdMsg, pwdMsgStyle:{ margin:'12px 0 0', fontSize:'13px', fontWeight:600, color: s.pwdOk ? '#2D9E60' : '#C0392B' },
+      savePwd:() => this.savePwd(),
+
+      inputStyle, textareaStyle,
+      toast:s.toast
+    };
+  }
+}
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+

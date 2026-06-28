@@ -1,0 +1,63 @@
+const jwt = require('jsonwebtoken');
+
+/**
+ * Exige um admin autenticado. O token vem de um cookie httpOnly (nao de
+ * localStorage/Authorization header) — assinado no login (authController.js)
+ * e lido aqui. Em caso de token ausente/invalido, responde 401 sem detalhar
+ * o motivo exato (nao da pista pra quem esta tentando adivinhar).
+ */
+function autenticarAdmin(req, res, next) {
+  const token = req.cookies?.bel_do_frango_atu_admin_token;
+  if (!token) {
+    return res.status(401).json({ erro: 'Nao autenticado' });
+  }
+
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    req.admin = { id: payload.id, email: payload.email };
+    next();
+  } catch {
+    return res.status(401).json({ erro: 'Sessao invalida ou expirada' });
+  }
+}
+
+/**
+ * Exige um garçom autenticado — mesmo esquema do admin (JWT em cookie
+ * httpOnly), mas com cookie e payload próprios. Garçom nunca tem acesso
+ * às rotas /api/admin/*, só às /api/garcom/* (escopo: mesas + comanda).
+ */
+function autenticarGarcom(req, res, next) {
+  const token = req.cookies?.bel_do_frango_atu_garcom_token;
+  if (!token) {
+    return res.status(401).json({ erro: 'Nao autenticado' });
+  }
+
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    req.garcom = { id: payload.id, email: payload.email };
+    next();
+  } catch {
+    return res.status(401).json({ erro: 'Sessao invalida ou expirada' });
+  }
+}
+
+/**
+ * Exige um entregador autenticado — mesmo esquema do admin/garçom (JWT em
+ * cookie httpOnly), cookie e payload próprios. Sem acesso a /api/admin/* nem /api/garcom/*.
+ */
+function autenticarEntregador(req, res, next) {
+  const token = req.cookies?.bel_do_frango_atu_entregador_token;
+  if (!token) {
+    return res.status(401).json({ erro: 'Nao autenticado' });
+  }
+
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    req.entregador = { id: payload.id, email: payload.email };
+    next();
+  } catch {
+    return res.status(401).json({ erro: 'Sessao invalida ou expirada' });
+  }
+}
+
+module.exports = { autenticarAdmin, autenticarGarcom, autenticarEntregador };
