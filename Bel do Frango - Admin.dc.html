@@ -963,11 +963,11 @@ class Component extends DCLogic {
     doc.write(
       '<meta charset="utf-8"><style>' +
       '@page{ size:58mm auto; margin:0; }' +
-      'body{ width:48mm; margin:0 auto; padding:2mm 1mm; font-family:\'Courier New\',monospace; font-size:11px; line-height:1.35; color:#000; }' +
-      '.c{ text-align:center; } .r{ text-align:right; } .b{ font-weight:bold; }' +
-      '.linha{ border-top:1px dashed #000; margin:4px 0; }' +
+      'body{ width:48mm; margin:0 auto; padding:2mm 1mm; font-family:\'Courier New\',monospace; font-size:12px; font-weight:700; line-height:1.4; color:#000; -webkit-print-color-adjust:exact; print-color-adjust:exact; }' +
+      '.c{ text-align:center; } .r{ text-align:right; } .b{ font-weight:900; }' +
+      '.linha{ border-top:2px dashed #000; margin:4px 0; }' +
       '.lin{ display:flex; justify-content:space-between; gap:6px; }' +
-      '.tit{ font-size:13px; }' +
+      '.tit{ font-size:14px; }' +
       '</style>' + corpoHtml
     );
     doc.close();
