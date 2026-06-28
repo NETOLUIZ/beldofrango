@@ -71,15 +71,16 @@ class Erro400 extends Error {}
  * requisição inclua um total "pronto".
  *
  * Corpo esperado:
- *   { nomeCliente, telefone, endereco,
+ *   { nomeCliente, telefone, endereco (obrigatorio se tipo=ENTREGA, omitido/null se RETIRADA), tipo?: 'ENTREGA'|'RETIRADA' (default ENTREGA),
  *     itens: [{ produtoId, quantidade, observacoes? } | { tamanhoMarmitaId, proteinaIds, complementoIds, quantidade, observacoes? }],
  *     cupomCodigo?, formaPagamento: 'PIX' | 'CARTAO' }
  */
 async function criar(req, res) {
   try {
     const { nomeCliente, telefone, endereco, itens, cupomCodigo, formaPagamento } = req.body;
+    const tipo = req.body.tipo === 'RETIRADA' ? 'RETIRADA' : 'ENTREGA';
 
-    if (!nomeCliente || !telefone || !endereco || !Array.isArray(itens) || itens.length === 0) {
+    if (!nomeCliente || !telefone || (tipo === 'ENTREGA' && !endereco) || !Array.isArray(itens) || itens.length === 0) {
       return res.status(400).json({ erro: 'Dados obrigatórios não informados' });
     }
     if (!FORMAS_PAGAMENTO_VALIDAS.includes(formaPagamento)) {
@@ -94,11 +95,11 @@ async function criar(req, res) {
     if (telefoneDigitos.length < 10 || telefoneDigitos.length > 15) {
       return res.status(400).json({ erro: 'Telefone inválido' });
     }
-    if (typeof endereco !== 'object' || Array.isArray(endereco) || endereco === null) {
+    if (tipo === 'ENTREGA' && (typeof endereco !== 'object' || Array.isArray(endereco) || endereco === null)) {
       return res.status(400).json({ erro: 'Endereço inválido' });
     }
     const LIMITES_ENDERECO = { rua: 150, numero: 20, complemento: 100, bairro: 100, cidade: 100, estado: 2 };
-    for (const [campo, max] of Object.entries(LIMITES_ENDERECO)) {
+    for (const [campo, max] of Object.entries(tipo === 'ENTREGA' ? LIMITES_ENDERECO : {})) {
       if (endereco[campo] != null && String(endereco[campo]).length > max) {
         return res.status(400).json({ erro: `Campo de endereço "${campo}" excede o tamanho máximo` });
       }
@@ -148,7 +149,7 @@ async function criar(req, res) {
 
     const desconto = cupom?.tipo === 'PERCENTUAL' ? subtotal * (cupom.percentual / 100) : 0;
     let taxaEntrega = 0;
-    if (cupom?.tipo !== 'FRETE_GRATIS') {
+    if (tipo === 'ENTREGA' && cupom?.tipo !== 'FRETE_GRATIS') {
       const config = await prisma.configuracao.findUnique({ where: { id: 1 } });
       taxaEntrega = config ? config.taxaEntrega : TAXA_ENTREGA_PADRAO;
     }
@@ -162,10 +163,11 @@ async function criar(req, res) {
 
     const pedido = await prisma.pedido.create({
       data: {
+        tipo,
         clienteId: cliente.id,
         nomeCliente: nomeTrim,
         telefone: telefoneDigitos,
-        endereco,
+        endereco: tipo === 'ENTREGA' ? endereco : null,
         cupomId: cupom?.id ?? null,
         subtotal: Number(subtotal.toFixed(2)),
         desconto: Number(desconto.toFixed(2)),
@@ -183,6 +185,7 @@ async function criar(req, res) {
     res.status(201).json({
       id: pedido.id,
       codigoAcompanhamento: pedido.codigoAcompanhamento,
+      tipo: pedido.tipo,
       subtotal: pedido.subtotal,
       desconto: pedido.desconto,
       taxaEntrega: pedido.taxaEntrega,

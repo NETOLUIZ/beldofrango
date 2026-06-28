@@ -755,6 +755,7 @@ class Component extends DCLogic {
     pedidoTipo: 'entrega', // 'entrega' | 'retirada' — escolhido no checkout
     payment: 'pix',
     placing: false,
+    pedidoAtual: null, // { codigo, id, total } do ultimo pedido criado de verdade na API
     orderStep: 0,
     fav: {},
     hamburgerOpen: false,
@@ -1003,12 +1004,12 @@ class Component extends DCLogic {
   openProduct(id){ this.setState({ screen:'product', selectedId:id, detailQty:1, detailObs:'', horarioRetirada:null }); }
   selecionarHorarioRetirada(h){ this.setState({ horarioRetirada:h }); }
 
-  addToCart(id, qty, obs){
+  addToCart(id, qty, obs, marmita){
     qty = qty || 1;
     this.setState(s => {
       const cart = { ...s.cart };
       const cur = cart[id] || { qty:0, obs:'' };
-      cart[id] = { qty: cur.qty + qty, obs: (obs != null && obs !== '') ? obs : cur.obs };
+      cart[id] = { qty: cur.qty + qty, obs: (obs != null && obs !== '') ? obs : cur.obs, marmita: marmita || cur.marmita };
       return { cart };
     });
   }
@@ -1034,17 +1035,54 @@ class Component extends DCLogic {
 
   placeOrder(){
     if (this.state.placing) return;
+    const s = this.state;
+    const usuario = s.usuario;
+    if (!usuario || !usuario.nome || !usuario.telefone) {
+      this.showToast('Complete seu cadastro (nome e telefone) antes de pedir');
+      this.goCadastro();
+      return;
+    }
+    if (s.pedidoTipo !== 'retirada' && !(usuario.endereco && usuario.endereco.rua)) {
+      this.showToast('Complete seu endereço de entrega antes de pedir');
+      this.goCadastro();
+      return;
+    }
+    const itens = Object.entries(s.cart).map(([id, v]) => v.marmita
+      ? { tamanhoMarmitaId: v.marmita.tamanhoMarmitaId, proteinaIds: v.marmita.proteinaIds, complementoIds: v.marmita.complementoIds, quantidade: v.qty, observacoes: v.obs || undefined }
+      : { produtoId: parseInt(id, 10), quantidade: v.qty, observacoes: v.obs || undefined });
+    if (itens.length === 0) { this.showToast('Seu carrinho está vazio'); return; }
+
+    const payload = {
+      nomeCliente: usuario.nome,
+      telefone: usuario.telefone,
+      tipo: s.pedidoTipo === 'retirada' ? 'RETIRADA' : 'ENTREGA',
+      endereco: s.pedidoTipo === 'retirada' ? null : usuario.endereco,
+      itens,
+      formaPagamento: s.payment === 'pix' ? 'PIX' : 'CARTAO',
+    };
+    if (s.couponApplied && s.coupon) payload.cupomCodigo = s.coupon.trim().toUpperCase();
+
     this.setState({ placing:true });
-    setTimeout(() => {
-      this.setState({ screen:'tracking', placing:false, orderStep:0, cart:{}, coupon:'', couponApplied:false, couponMsg:'' });
-      clearInterval(this._o);
-      this._o = setInterval(() => {
-        this.setState(s => {
-          if (s.orderStep >= 3) { clearInterval(this._o); return s; }
-          return { orderStep: s.orderStep + 1 };
+    fetch(this.apiBase + '/pedidos', { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(payload) })
+      .then(async (res) => {
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.erro || 'Erro ao enviar pedido');
+        this.setState({
+          screen:'tracking', placing:false, orderStep:0, cart:{}, coupon:'', couponApplied:false, couponMsg:'',
+          pedidoAtual: { codigo:data.codigoAcompanhamento, id:data.id, total:data.total },
         });
-      }, 3600);
-    }, 1300);
+        clearInterval(this._o);
+        this._o = setInterval(() => {
+          this.setState(st => {
+            if (st.orderStep >= 3) { clearInterval(this._o); return st; }
+            return { orderStep: st.orderStep + 1 };
+          });
+        }, 3600);
+      })
+      .catch((e) => {
+        this.setState({ placing:false });
+        this.showToast(e.message || 'Não foi possível enviar o pedido. Tente novamente.');
+      });
   }
 
   showToast(msg){
@@ -1174,7 +1212,10 @@ class Component extends DCLogic {
       id, cat:null, name: size.nome + ' — ' + nomesP.join(' + '),
       desc: nomesC.length ? 'Com ' + nomesC.join(', ') : 'Sem complementos', price:size.price, rating:'', tag:'Montada por você'
     }] }));
-    this.addToCart(id, 1);
+    // Guarda os ids reais (tamanho/proteinas/complementos) junto do item do carrinho —
+    // o "produto" sintetico acima e so pra reaproveitar a UI de carrinho/checkout; o
+    // pedido enviado ao backend usa esses ids, nunca o id sintetico "marmita-...".
+    this.addToCart(id, 1, null, { tamanhoMarmitaId: s.marmitaSizeId, proteinaIds: selP.slice(), complementoIds: s.marmitaSelComplementos.slice() });
     this.showToast('Marmita adicionada ao carrinho');
     this.go('cart');
   }
@@ -1543,7 +1584,7 @@ class Component extends DCLogic {
       confirmLabel: s.placing ? 'Enviando pedido...' : (s.pedidoTipo === 'retirada' ? 'Pedir agora — retirar em ~20 min' : 'Pedir agora — chega em ~40 min'),
 
       orderSteps, statusTitle:statusTitles[s.orderStep], etaText:etas[s.orderStep],
-      orderId:'#BF2048',
+      orderId: s.pedidoAtual ? '#BF' + String(s.pedidoAtual.id).padStart(4, '0') : '',
 
       navHomeStyle:navBtn(isHome), navMenuStyle:navBtn(isMenu), navCartStyle:navBtn(isCart), navContaStyle:navBtn(isConta),
       topHomeStyle:topBtn(isHome), topMenuStyle:topBtn(isMenu), topContaStyle:topBtn(isConta),
