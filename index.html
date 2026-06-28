@@ -1587,6 +1587,7 @@ class Component extends DCLogic {
       onObs:(e) => this.setState({ detailObs:e.target.value }),
       isGaletoProduto, horarioOptions, hasHorarioRetirada: !!s.horarioRetirada,
       addDetail:() => {
+        if (isGaletoProduto && !s.horarioRetirada) { this.showToast('Escolha um horário de retirada'); return; }
         const obsComHorario = (isGaletoProduto && s.horarioRetirada)
           ? 'Retirar às ' + s.horarioRetirada + (s.detailObs ? ' — ' + s.detailObs : '')
           : s.detailObs;
