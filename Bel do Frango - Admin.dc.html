@@ -1904,7 +1904,7 @@ class Component extends DCLogic {
     const proteinaRows = s.proteinas.map(marmitaRow('proteinas'));
     const complementoRows = s.complementos.map(marmitaRow('complementos'));
     const marmitaSizeInputs = ['pequena','grande'].map(id => {
-      const sz = s.marmitaSizes[id];
+      const sz = s.marmitaSizes[id] || { nome: id === 'pequena' ? 'Marmita Pequena' : 'Marmita Grande', proteinas:1, price:0 };
       return { id, nome:sz.nome, proteinasLabel: sz.proteinas + (sz.proteinas===1?' proteína':' proteínas') + ' + complementos à vontade',
         price:String(sz.price), onPrice:this.onMarmitaSizePreco(id) };
     });

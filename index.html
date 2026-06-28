@@ -1378,13 +1378,14 @@ class Component extends DCLogic {
     // ---- monte sua marmita: cards de tamanho (Cardápio) + opções da tela de montagem ----
     const mc = s.marmitaConfig;
     const isMarmitasTab = s.selectedCat === marmitaCatId && !q;
+    const marmitaSizeDefault = (id) => ({ nome: id === 'pequena' ? 'Marmita Pequena' : 'Marmita Grande', proteinas:1, price:0 });
     const marmitaSizeCards = ['pequena','grande'].map(id => {
-      const sz = mc.marmitaSizes[id];
+      const sz = mc.marmitaSizes[id] || marmitaSizeDefault(id);
       return { id, nome:sz.nome,
         subtitulo: (sz.proteinas === 1 ? '1 proteína' : sz.proteinas + ' proteínas') + ' + complementos à vontade',
         priceFmt:this.fmt(sz.price), onOpen:() => this.abrirMarmita(id) };
     });
-    const marmitaSize = mc.marmitaSizes[s.marmitaSizeId] || mc.marmitaSizes.pequena;
+    const marmitaSize = mc.marmitaSizes[s.marmitaSizeId] || mc.marmitaSizes.pequena || marmitaSizeDefault(s.marmitaSizeId || 'pequena');
     const optBtnStyle = (selecionado, esgotado) => ({
       display:'flex', alignItems:'center', gap:'10px', width:'100%', textAlign:'left',
       border: selecionado ? '2px solid #D62828' : '1px solid rgba(29,16,9,.1)',
