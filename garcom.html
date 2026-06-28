@@ -44,9 +44,15 @@
       </div>
     </div>
     <label style="display:block;font-size:13px;font-weight:600;color:#7A1209;margin-bottom:6px;">E-mail</label>
-    <input value="{{ loginEmail }}" onChange="{{ onLoginEmail }}" placeholder="garcom@belodofrango.com" style="{{ inputStyle }}"/>
+    <input value="{{ loginEmail }}" onChange="{{ onLoginEmail }}" placeholder="garcom@beldofrango.com" style="{{ inputStyle }}"/>
     <label style="display:block;font-size:13px;font-weight:600;color:#7A1209;margin:16px 0 6px;">Senha</label>
-    <input type="password" value="{{ loginSenha }}" onChange="{{ onLoginSenha }}" placeholder="••••••••" style="{{ inputStyle }}"/>
+    <div style="position:relative;">
+      <input type="{{ tipoLoginSenha }}" value="{{ loginSenha }}" onChange="{{ onLoginSenha }}" placeholder="••••••••" style="{{ inputStyleSenha }}"/>
+      <button type="button" onClick="{{ toggleLoginSenha }}" aria-label="Mostrar senha" style="{{ olhoBtnStyle }}">
+        <sc-if value="{{ mostrarLoginSenha }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 11 8 11 8a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 1 12s4 8 11 8a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg></sc-if>
+        <sc-if value="{{ ocultarLoginSenha }}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg></sc-if>
+      </button>
+    </div>
     <sc-if value="{{ hasLoginErro }}" hint-placeholder-val="{{ false }}"><p style="margin:10px 2px 0;font-size:13px;font-weight:600;color:#C0392B;">{{ loginErro }}</p></sc-if>
     <button onClick="{{ doLogin }}" style="margin-top:18px;width:100%;background:#D62828;color:#fff;border:none;border-radius:14px;padding:15px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 10px 24px rgba(214,40,40,.34);">{{ loginLabel }}</button>
   </div>
@@ -109,11 +115,29 @@
   </div>
   <div style="background:#fff;border-radius:20px;padding:22px;box-shadow:0 6px 18px rgba(29,16,9,.06);">
     <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Senha atual</label>
-    <input type="password" value="{{ pwdAtual }}" onChange="{{ onPwdAtual }}" placeholder="••••••••" style="{{ inputStyle }}"/>
+    <div style="position:relative;">
+      <input type="{{ tipoPwdAtual }}" value="{{ pwdAtual }}" onChange="{{ onPwdAtual }}" placeholder="••••••••" style="{{ inputStyleSenha }}"/>
+      <button type="button" onClick="{{ togglePwdAtual }}" aria-label="Mostrar senha" style="{{ olhoBtnStyle }}">
+        <sc-if value="{{ mostrarPwdAtual }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 11 8 11 8a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 1 12s4 8 11 8a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg></sc-if>
+        <sc-if value="{{ ocultarPwdAtual }}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg></sc-if>
+      </button>
+    </div>
     <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin:16px 0 6px;">Nova senha</label>
-    <input type="password" value="{{ pwdNova }}" onChange="{{ onPwdNova }}" placeholder="Mín. 6 caracteres" style="{{ inputStyle }}"/>
+    <div style="position:relative;">
+      <input type="{{ tipoPwdNova }}" value="{{ pwdNova }}" onChange="{{ onPwdNova }}" placeholder="Mín. 6 caracteres" style="{{ inputStyleSenha }}"/>
+      <button type="button" onClick="{{ togglePwdNova }}" aria-label="Mostrar senha" style="{{ olhoBtnStyle }}">
+        <sc-if value="{{ mostrarPwdNova }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 11 8 11 8a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 1 12s4 8 11 8a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg></sc-if>
+        <sc-if value="{{ ocultarPwdNova }}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg></sc-if>
+      </button>
+    </div>
     <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin:16px 0 6px;">Confirmar nova senha</label>
-    <input type="password" value="{{ pwdConf }}" onChange="{{ onPwdConf }}" placeholder="••••••••" style="{{ inputStyle }}"/>
+    <div style="position:relative;">
+      <input type="{{ tipoPwdConf }}" value="{{ pwdConf }}" onChange="{{ onPwdConf }}" placeholder="••••••••" style="{{ inputStyleSenha }}"/>
+      <button type="button" onClick="{{ togglePwdConf }}" aria-label="Mostrar senha" style="{{ olhoBtnStyle }}">
+        <sc-if value="{{ mostrarPwdConf }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 11 8 11 8a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 1 12s4 8 11 8a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg></sc-if>
+        <sc-if value="{{ ocultarPwdConf }}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg></sc-if>
+      </button>
+    </div>
     <sc-if value="{{ pwdMsg }}" hint-placeholder-val="{{ false }}"><p style="{{ pwdMsgStyle }}">{{ pwdMsg }}</p></sc-if>
     <button onClick="{{ savePwd }}" style="margin-top:18px;width:100%;background:#D97706;color:#fff;border:none;border-radius:14px;padding:14px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 20px rgba(217,119,6,.28);">Salvar nova senha</button>
   </div>
@@ -212,9 +236,12 @@ class Component extends DCLogic {
     salvando: false,
 
     pwd: { atual:'', nova:'', conf:'' }, pwdMsg:'', pwdOk:false,
+    mostrarSenha: {},
 
     toast: ''
   };
+
+  toggleMostrarSenha(campo){ this.setState(s => ({ mostrarSenha: { ...s.mostrarSenha, [campo]: !s.mostrarSenha[campo] } })); }
 
   fmt(n){ return 'R$ ' + (Math.round(n*100)/100).toFixed(2).replace('.', ','); }
   showToast(m){ this.setState({ toast:m }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast:'' }), 2200); }
@@ -415,12 +442,26 @@ class Component extends DCLogic {
       pwdConf:s.pwd.conf, onPwdConf:(e) => this.onPwdConf(e),
       pwdMsg:s.pwdMsg, pwdMsgStyle:{ margin:'10px 2px 0', fontSize:'13px', fontWeight:600, color: s.pwdOk ? '#2D9E60' : '#C0392B' },
       savePwd:() => this.savePwd(),
+      tipoPwdAtual: s.mostrarSenha.atual ? 'text' : 'password',
+      mostrarPwdAtual: !!s.mostrarSenha.atual, ocultarPwdAtual: !s.mostrarSenha.atual,
+      togglePwdAtual:() => this.toggleMostrarSenha('atual'),
+      tipoPwdNova: s.mostrarSenha.nova ? 'text' : 'password',
+      mostrarPwdNova: !!s.mostrarSenha.nova, ocultarPwdNova: !s.mostrarSenha.nova,
+      togglePwdNova:() => this.toggleMostrarSenha('nova'),
+      tipoPwdConf: s.mostrarSenha.conf ? 'text' : 'password',
+      mostrarPwdConf: !!s.mostrarSenha.conf, ocultarPwdConf: !s.mostrarSenha.conf,
+      togglePwdConf:() => this.toggleMostrarSenha('conf'),
 
       loginEmail:s.loginForm.email, onLoginEmail:(e) => this.onLoginEmail(e),
       loginSenha:s.loginForm.senha, onLoginSenha:(e) => this.onLoginSenha(e),
       doLogin:() => this.doLogin(), loginLabel: s.loggingIn ? 'Entrando...' : 'Entrar',
       loginErro:s.loginErro, hasLoginErro: !!s.loginErro,
       inputStyle:{ width:'100%', border:'1px solid rgba(29,16,9,.14)', background:'#fff', borderRadius:'12px', padding:'13px 14px', fontSize:'15px', color:'#1D1009', outline:'none' },
+      inputStyleSenha:{ width:'100%', border:'1px solid rgba(29,16,9,.14)', background:'#fff', borderRadius:'12px', padding:'13px 42px 13px 14px', fontSize:'15px', color:'#1D1009', outline:'none' },
+      olhoBtnStyle:{ position:'absolute', right:'6px', top:'50%', transform:'translateY(-50%)', width:'32px', height:'32px', border:'none', background:'transparent', color:'#8C8075', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer' },
+      tipoLoginSenha: s.mostrarSenha.login ? 'text' : 'password',
+      mostrarLoginSenha: !!s.mostrarSenha.login, ocultarLoginSenha: !s.mostrarSenha.login,
+      toggleLoginSenha:() => this.toggleMostrarSenha('login'),
 
       mesaCards,
 

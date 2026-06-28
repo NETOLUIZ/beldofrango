@@ -177,24 +177,24 @@ async function main() {
   const senhaAdmin = process.env.SEED_ADMIN_SENHA || 'BelDoFrangoAtu@2026';
   const senhaHash = await bcrypt.hash(senhaAdmin, 10);
   await prisma.admin.upsert({
-    where: { email: 'admin@belodofrango.com' },
+    where: { email: 'admin@beldofrango.com' },
     update: {},
-    create: { email: 'admin@belodofrango.com', senha: senhaHash, nome: 'Administrador' },
+    create: { email: 'admin@beldofrango.com', senha: senhaHash, nome: 'Administrador' },
   });
 
   const senhaGarcom = process.env.SEED_GARCOM_SENHA || 'GarcomBelDoFrango@2026';
   const senhaGarcomHash = await bcrypt.hash(senhaGarcom, 10);
   await prisma.garcom.upsert({
-    where: { email: 'garcom@belodofrango.com' },
+    where: { email: 'garcom@beldofrango.com' },
     update: {},
-    create: { email: 'garcom@belodofrango.com', senha: senhaGarcomHash, nome: 'Garçom' },
+    create: { email: 'garcom@beldofrango.com', senha: senhaGarcomHash, nome: 'Garçom' },
   });
 
   console.log('\n✔ Seed concluído com sucesso!');
   console.log('─────────────────────────────────────────');
-  console.log('Admin login  : admin@belodofrango.com');
+  console.log('Admin login  : admin@beldofrango.com');
   console.log(`Admin senha  : ${senhaAdmin}`);
-  console.log('Garçom login : garcom@belodofrango.com');
+  console.log('Garçom login : garcom@beldofrango.com');
   console.log(`Garçom senha : ${senhaGarcom}`);
   console.log('─────────────────────────────────────────');
 }
