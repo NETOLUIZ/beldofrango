@@ -221,6 +221,7 @@ async function buscarPorCodigo(req, res) {
             complementos: { include: { complemento: true } },
           },
         },
+        entregador: true,
       },
     });
     if (!pedido) {
@@ -246,10 +247,9 @@ async function buscarPorCodigo(req, res) {
         observacoes: item.observacoes,
         precoUnitario: item.precoUnitarioCongelado,
       })),
-      entregador: {
-        nome: process.env.ENTREGADOR_NOME || 'Equipe de entrega',
-        telefone: process.env.ENTREGADOR_TELEFONE || null,
-      },
+      entregador: pedido.entregador
+        ? { nome: pedido.entregador.nome }
+        : { nome: process.env.ENTREGADOR_NOME || 'Equipe de entrega' },
     });
   } catch (err) {
     console.error('Erro ao buscar pedido:', err);
