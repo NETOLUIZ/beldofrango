@@ -944,6 +944,12 @@ class Component extends DCLogic {
 
   fmt(n){ return 'R$ ' + (Math.round(n*100)/100).toFixed(2).replace('.', ','); }
   catLabel(id){ const c = this.state.categorias.find(x => x.id === id); return c ? c.nome : '—'; }
+  formatarDataHoje(){
+    const meses = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+    const dias = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+    const d = new Date();
+    return d.getDate() + ' ' + meses[d.getMonth()] + ' ' + d.getFullYear() + ', ' + dias[d.getDay()];
+  }
   toggleMostrarSenha(campo){ this.setState(s => ({ mostrarSenha: { ...s.mostrarSenha, [campo]: !s.mostrarSenha[campo] } })); }
 
   // ---- impressão térmica (POS-58, 58mm) ----
@@ -2038,7 +2044,7 @@ class Component extends DCLogic {
       showSearch: s.view === 'pedidos' || s.view === 'produtos',
       searchPlaceholder: s.view === 'produtos' ? 'Buscar produto...' : 'Buscar pedido ou cliente...',
       search:s.search, onSearch:(e) => this.setState({ search:e.target.value }),
-      todayDate:'21 jun 2026, Sáb', openLabel:'Aberto agora',
+      todayDate: this.formatarDataHoje(), openLabel:'Aberto agora',
 
       isPedidos: s.view==='pedidos', isProdutos: s.view==='produtos', isCategorias: s.view==='categorias', isMarmitas: s.view==='marmitas', isBanners: s.view==='banners', isMesas: s.view==='mesas', isSenha: s.view==='senha',
       isCaixa: s.view==='caixa', isVendas: s.view==='vendas', isEntregadores: s.view==='entregadores', isGarcons: s.view==='garcons',
