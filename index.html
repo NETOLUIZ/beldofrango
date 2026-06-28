@@ -916,7 +916,22 @@ class Component extends DCLogic {
     setTimeout(() => map.invalidateSize(), 80);
   };
 
+  // Cadastro é opcional e sem senha — guardamos no localStorage do próprio aparelho
+  // do cliente (nunca enviado a outro lugar) só pra não perder o endereço ao fechar o app.
+  USUARIO_STORAGE_KEY = 'bf_usuario';
+  carregarUsuarioSalvo(){
+    try {
+      const raw = localStorage.getItem(this.USUARIO_STORAGE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) { return null; }
+  }
+  salvarUsuarioLocal(usuario){
+    try { localStorage.setItem(this.USUARIO_STORAGE_KEY, JSON.stringify(usuario)); } catch (e) { /* localStorage indisponível (modo privado etc) — segue sem persistir */ }
+  }
+
   componentDidMount() {
+    const usuarioSalvo = this.carregarUsuarioSalvo();
+    if (usuarioSalvo) this.setState({ usuario: usuarioSalvo });
     this._t = setTimeout(() => { if (this.state.screen === 'splash') this.setState({ screen:'home' }); }, 2100);
     this._lastScreen = this.state.screen;
     this._r = () => this.setState({ vw: window.innerWidth });
@@ -1121,6 +1136,7 @@ class Component extends DCLogic {
       endereco: { cep:c.cep, rua:c.rua.trim(), numero:c.numero.trim(), complemento:c.complemento.trim(), bairro:c.bairro.trim(), cidade:c.cidade.trim(), uf:c.uf.trim() }
     };
     this.setState({ usuario, screen:'conta' });
+    this.salvarUsuarioLocal(usuario);
     this.showToast('Cadastro salvo!');
   }
 
