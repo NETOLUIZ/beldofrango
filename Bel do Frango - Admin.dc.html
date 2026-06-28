@@ -963,11 +963,12 @@ class Component extends DCLogic {
     doc.write(
       '<meta charset="utf-8"><style>' +
       '@page{ size:58mm auto; margin:0; }' +
-      'body{ width:48mm; margin:0 auto; padding:2mm 1mm; font-family:\'Courier New\',monospace; font-size:12px; font-weight:700; line-height:1.4; color:#000; -webkit-print-color-adjust:exact; print-color-adjust:exact; }' +
+      'body{ width:48mm; margin:0 auto; padding:2mm 1mm; font-family:\'Courier New\',monospace; font-size:13px; font-weight:700; line-height:1.5; color:#000; }' +
       '.c{ text-align:center; } .r{ text-align:right; } .b{ font-weight:900; }' +
-      '.linha{ border-top:2px dashed #000; margin:4px 0; }' +
+      '.linha{ margin:5px 0; white-space:pre; }' +
+      '.esp{ height:8px; }' +
       '.lin{ display:flex; justify-content:space-between; gap:6px; }' +
-      '.tit{ font-size:14px; }' +
+      '.tit{ font-size:16px; }' +
       '</style>' + corpoHtml
     );
     doc.close();
@@ -978,6 +979,7 @@ class Component extends DCLogic {
     }, 250);
   }
   imprimirReciboMesa(mesa){
+    const SEP = '<div class="linha">================================</div>';
     const itensHtml = (mesa.itens || []).map((it) =>
       '<div class="lin"><span>' + this.escapeHtml(it.quantidade) + 'x ' + this.escapeHtml(it.nome) + '</span><span>' + this.fmt(it.quantidade * it.precoUnitario) + '</span></div>'
     ).join('');
@@ -985,15 +987,17 @@ class Component extends DCLogic {
     const html =
       '<div class="c b tit">BEL DO FRANGO</div>' +
       '<div class="c">Mesa ' + this.escapeHtml(mesa.numero) + (mesa.clienteNome ? ' — ' + this.escapeHtml(mesa.clienteNome) : '') + '</div>' +
-      '<div class="linha"></div>' + itensHtml + '<div class="linha"></div>' +
-      '<div class="lin b"><span>TOTAL</span><span>' + this.fmt(mesa.total) + '</span></div>' +
-      '<div class="c" style="margin-top:6px;font-size:10px;">' + agora + '</div>';
+      SEP + itensHtml + SEP +
+      '<div class="lin b">TOTAL <span>' + this.fmt(mesa.total) + '</span></div>' +
+      '<div class="esp"></div>' +
+      '<div class="c" style="font-size:10px;">' + agora + '</div>';
     this.imprimirHTML(html);
   }
   imprimirReciboPedido(p){
+    const SEP = '<div class="linha">================================</div>';
     const itensHtml = (p.itensImpressao || []).map((it) =>
       '<div class="lin"><span>' + this.escapeHtml(it.q) + 'x ' + this.escapeHtml(it.nome) + '</span></div>' +
-      (it.obs ? '<div style="padding-left:8px;font-size:10px;">obs: ' + this.escapeHtml(it.obs) + '</div>' : '')
+      (it.obs ? '<div style="padding-left:8px;font-size:11px;">obs: ' + this.escapeHtml(it.obs) + '</div>' : '')
     ).join('');
     const e = p.enderecoFull || {};
     const enderecoHtml = p.tipoRaw === 'ENTREGA'
@@ -1005,16 +1009,18 @@ class Component extends DCLogic {
     const html =
       '<div class="c b tit">BEL DO FRANGO</div>' +
       '<div class="c b">PEDIDO ' + this.escapeHtml(p.id) + ' — ' + this.escapeHtml(p.tipo.toUpperCase()) + '</div>' +
-      '<div class="linha"></div>' +
+      SEP +
       '<div><span class="b">Cliente:</span> ' + this.escapeHtml(p.cliente) + '</div>' +
       (p.telefone ? '<div><span class="b">Tel:</span> ' + this.escapeHtml(p.telefone) + '</div>' : '') +
       enderecoHtml +
-      '<div class="linha"></div>' + itensHtml + '<div class="linha"></div>' +
+      SEP + itensHtml + '<div class="esp"></div>' + SEP +
       '<div class="lin"><span>Subtotal</span><span>' + this.fmt(p.subtotal) + '</span></div>' +
       (p.taxaEntrega ? '<div class="lin"><span>Taxa entrega</span><span>' + this.fmt(p.taxaEntrega) + '</span></div>' : '') +
       '<div class="lin b"><span>TOTAL</span><span>' + this.fmt(p.total) + '</span></div>' +
-      '<div>Pagamento: ' + this.escapeHtml(p.pgto) + '</div>' +
-      '<div class="c" style="margin-top:6px;font-size:10px;">' + agora + '</div>';
+      '<div class="esp"></div>' +
+      '<div><span class="b">Pagamento:</span> ' + this.escapeHtml(p.pgto) + '</div>' +
+      '<div class="esp"></div>' +
+      '<div class="c" style="font-size:10px;">' + agora + '</div>';
     this.imprimirHTML(html);
   }
   // Acompanha o maior id de pedido já visto pra imprimir só pedidos de ENTREGA genuinamente
