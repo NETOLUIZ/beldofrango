@@ -262,15 +262,42 @@
 
       <!-- ---------- CATEGORIAS ---------- -->
       <sc-if value="{{ isCategorias }}" hint-placeholder-val="{{ false }}">
-      <div style="animation:adIn .25s ease-out;">
-        <p style="margin:0 0 18px;font-size:13px;color:#8C8075;max-width:560px;">Foto exibida nos círculos de categoria na Home e no cardápio do app do cliente.</p>
+      <div style="animation:adIn .25s ease-out;max-width:860px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+          <p style="margin:0;font-size:13px;color:#8C8075;flex:1;">Gerencie as categorias do cardápio — nome, ordem e foto dos círculos exibidos no app do cliente.</p>
+          <button onClick="{{ novaCategoria }}" style="display:flex;align-items:center;gap:8px;background:#6B2E12;color:#FFF3DC;border:none;border-radius:12px;padding:11px 17px;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 6px 16px rgba(107,46,18,.22);flex:none;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nova categoria
+          </button>
+        </div>
+
+        <sc-if value="{{ isCategoriaDraft }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:18px;background:#FFFBF3;border:1px solid rgba(29,16,9,.08);border-radius:14px;padding:14px;">
+            <div style="font-weight:700;font-size:13px;color:#6B2E12;margin-bottom:2px;">{{ categoriaDraftTitulo }}</div>
+            <div style="display:flex;gap:8px;">
+              <input value="{{ categoriaDraftNome }}" onChange="{{ onCategoriaDraftNome }}" placeholder="Nome da categoria" style="flex:1;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;"/>
+              <input value="{{ categoriaDraftOrdem }}" onChange="{{ onCategoriaDraftOrdem }}" placeholder="Ordem (ex: 1)" inputmode="numeric" style="width:120px;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;"/>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button onClick="{{ salvarCategoriaDraft }}" style="background:#2D9E60;color:#fff;border:none;border-radius:10px;padding:10px 16px;font-weight:700;font-size:13px;cursor:pointer;">Salvar</button>
+              <button onClick="{{ cancelarCategoriaDraft }}" style="background:none;border:1px solid rgba(29,16,9,.14);color:#6B2E12;border-radius:10px;padding:10px 16px;font-weight:700;font-size:13px;cursor:pointer;">Cancelar</button>
+            </div>
+          </div>
+        </sc-if>
+
         <input ref="{{ setCategoriaFotoInput }}" type="file" accept="image/*" onChange="{{ onCategoriaFotoSelected }}" style="display:none;"/>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;">
           <sc-for list="{{ categoriaCards }}" as="cat" hint-placeholder-count="6">
             <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:16px;box-shadow:0 5px 16px rgba(29,16,9,.05);display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;">
+              <div style="display:flex;justify-content:flex-end;width:100%;gap:6px;">
+                <button onClick="{{ cat.onEdit }}" aria-label="Editar" style="background:#FFF3DC;border:1px solid #F2C078;color:#B45309;border-radius:8px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>
+                <button onClick="{{ cat.onExcluir }}" aria-label="Excluir" style="background:none;border:1px solid rgba(192,57,43,.25);color:#C0392B;border-radius:8px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+              </div>
               <sc-if value="{{ cat.hasFoto }}" hint-placeholder-val="{{ false }}"><div style="width:72px;height:72px;border-radius:50%;overflow:hidden;flex:none;"><img src="{{ cat.fotoSrc }}" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
               <sc-if value="{{ cat.semFoto }}" hint-placeholder-val="{{ true }}"><div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#FFE9C2 0%,#F2C078 100%);border:1px solid rgba(180,83,9,.18);display:flex;align-items:center;justify-content:center;flex:none;"><span style="font-family:'DM Mono',monospace;font-size:9px;color:#B45309;opacity:.75;">foto</span></div></sc-if>
-              <div style="font-weight:700;font-size:14px;">{{ cat.nome }}</div>
+              <div>
+                <div style="font-weight:700;font-size:14px;">{{ cat.nome }}</div>
+                <div style="font-size:11px;color:#8C8075;margin-top:2px;">{{ cat.ordemLabel }}</div>
+              </div>
               <button onClick="{{ cat.onTrocarFoto }}" style="background:#FFF3DC;border:1px solid #F2C078;color:#B45309;border-radius:9px;padding:8px 12px;font-weight:700;font-size:12px;cursor:pointer;width:100%;">Trocar foto</button>
               <sc-if value="{{ cat.hasFoto }}" hint-placeholder-val="{{ false }}"><button onClick="{{ cat.onRemoverFoto }}" style="background:none;border:none;color:#C0392B;font-size:11.5px;font-weight:600;cursor:pointer;padding:2px;">Remover foto</button></sc-if>
             </div>
@@ -926,6 +953,7 @@ class Component extends DCLogic {
     entregadorDraft:null,
     garcons:[],
     garcomDraft:null,
+    categoriaDraft:null,
 
     // ---- "Monte sua marmita": catálogo próprio de proteínas/complementos + preço por tamanho (via API) ----
     proteinas:[],
@@ -1052,7 +1080,7 @@ class Component extends DCLogic {
   // enquanto a aba estiver aberta.
   nav(view){
     clearInterval(this._mesasPoll);
-    this.setState({ view, sidebarOpen:false, productDraft:null, bannerDraft:null, marmitaDraft:null, selectedOrder:null, selectedTable:null, entregadorDraft:null, garcomDraft:null });
+    this.setState({ view, sidebarOpen:false, productDraft:null, bannerDraft:null, marmitaDraft:null, selectedOrder:null, selectedTable:null, entregadorDraft:null, garcomDraft:null, categoriaDraft:null });
     if (view === 'mesas') {
       this.carregarMesas();
       this._mesasPoll = setInterval(() => this.carregarMesas(), 8000);
@@ -1296,6 +1324,38 @@ class Component extends DCLogic {
       this.setState(s => ({ garcons: s.garcons.map(x => x.id === id ? updated : x) }));
     } catch (err) { this.showToast('Erro ao atualizar garçom'); }
   }
+  novaCategoria(){ this.setState({ categoriaDraft: { id:null, nome:'', ordem:'' } }); }
+  editCategoria(c){ this.setState({ categoriaDraft: { id:c.id, nome:c.nome, ordem:String(c.ordem) } }); }
+  cancelarCategoriaDraft(){ this.setState({ categoriaDraft: null }); }
+  onCategoriaDraftNome(e){ this.setState(s => ({ categoriaDraft: { ...s.categoriaDraft, nome: e.target.value } })); }
+  onCategoriaDraftOrdem(e){ this.setState(s => ({ categoriaDraft: { ...s.categoriaDraft, ordem: e.target.value } })); }
+  async salvarCategoriaDraft(){
+    const d = this.state.categoriaDraft;
+    const nome = (d?.nome || '').trim();
+    if (!nome){ this.showToast('Informe o nome da categoria'); return; }
+    const ordem = parseInt(d?.ordem, 10) || 0;
+    try {
+      const salvo = d.id
+        ? await this.apiSend('PUT', '/admin/categorias/' + d.id, { nome, ordem })
+        : await this.apiSend('POST', '/admin/categorias', { nome, ordem });
+      this.setState(s => ({
+        categorias: d.id
+          ? s.categorias.map(x => x.id === d.id ? salvo : x)
+          : [...s.categorias, salvo].sort((a,b) => a.ordem - b.ordem || a.nome.localeCompare(b.nome)),
+        categoriaDraft: null
+      }));
+      this.showToast(d.id ? 'Categoria atualizada' : 'Categoria criada');
+    } catch (e) { this.showToast(e.message || 'Erro ao salvar categoria'); }
+  }
+  async excluirCategoria(id){
+    if (!confirm('Excluir esta categoria? Só é possível se não houver produtos nela.')) return;
+    try {
+      await this.apiDelete('/admin/categorias/' + id);
+      this.setState(s => ({ categorias: s.categorias.filter(c => c.id !== id) }));
+      this.showToast('Categoria excluída');
+    } catch (e) { this.showToast(e.message || 'Não foi possível excluir — remova os produtos dela primeiro'); }
+  }
+
   async atribuirEntregador(pedidoRawId, entregadorId){
     try {
       await this.apiSend('PUT', '/admin/pedidos/' + pedidoRawId + '/entregador', { entregadorId: entregadorId || null });
@@ -1867,13 +1927,15 @@ class Component extends DCLogic {
           background: on ? '#FFF3DC' : '#FFFBF3', color: on ? '#B45309' : '#8C8075', borderColor: on ? '#F2C078' : 'rgba(29,16,9,.08)' } };
     });
 
-    // ---- categorias (foto exibida na Home/cardápio do cliente) ----
+    // ---- categorias (foto + CRUD completo) ----
     const categoriaCards = s.categorias.map(c => {
       const fotoSrc = c.foto ? this.apiBase.replace('/api', '') + '/uploads/' + c.foto : '';
       return {
-        nome: c.nome, hasFoto: !!c.foto, semFoto: !c.foto, fotoSrc,
+        nome: c.nome, ordemLabel: 'Ordem ' + c.ordem, hasFoto: !!c.foto, semFoto: !c.foto, fotoSrc,
         onTrocarFoto:() => this.triggerTrocarFotoCategoria(c.id),
-        onRemoverFoto:() => this.removerFotoCategoria(c.id)
+        onRemoverFoto:() => this.removerFotoCategoria(c.id),
+        onEdit:() => this.editCategoria(c),
+        onExcluir:() => this.excluirCategoria(c.id)
       };
     });
 
@@ -2105,6 +2167,15 @@ class Component extends DCLogic {
       catTabs, productRows, productsEmpty: productRows.length === 0,
       newProduct:() => this.newProduct(),
 
+      novaCategoria:() => this.novaCategoria(),
+      isCategoriaDraft: !!s.categoriaDraft,
+      categoriaDraftTitulo: s.categoriaDraft?.id ? 'Editar categoria' : 'Nova categoria',
+      categoriaDraftNome: s.categoriaDraft?.nome || '',
+      categoriaDraftOrdem: s.categoriaDraft?.ordem || '',
+      onCategoriaDraftNome:(e) => this.onCategoriaDraftNome(e),
+      onCategoriaDraftOrdem:(e) => this.onCategoriaDraftOrdem(e),
+      salvarCategoriaDraft:() => this.salvarCategoriaDraft(),
+      cancelarCategoriaDraft:() => this.cancelarCategoriaDraft(),
       categoriaCards,
       setCategoriaFotoInput:(el) => this.setCategoriaFotoInput(el),
       onCategoriaFotoSelected:(e) => this.onCategoriaFotoSelected(e),
